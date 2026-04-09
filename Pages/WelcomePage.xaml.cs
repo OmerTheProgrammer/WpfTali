@@ -37,7 +37,12 @@ namespace WpfTali
 
         }
 
-        private void login(object sender, RoutedEventArgs e)
+        //private void login(object sender, RoutedEventArgs e)
+        //{
+        //    NavigationService.Navigate(new LoginPage());
+        //}
+
+        private void EnterPro(object sender, MouseButtonEventArgs e)
         {
             NavigationService.Navigate(new LoginPage());
         }

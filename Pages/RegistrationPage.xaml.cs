@@ -28,13 +28,14 @@ namespace WpfTali
             InitializeComponent();
 
         }
-        private void SignUpButton_Click(object sender, RoutedEventArgs e)
+        private async Task SignUpButton_Click(object sender, RoutedEventArgs e)
         {
             string firstName = pName.Text;
             string lastName = lName.Text;
             string email = Email.Text;
             string userName = UserName.Text;
             string phone = telephone.Text;
+            string Num_id = idNum.Text;
             string password = Pass.Password;
             string gender = (GenderComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
             DatePicker born=bornDate;
@@ -56,6 +57,20 @@ namespace WpfTali
                 return;
             }
 
+            int GenderId = 0;
+            switch (gender)
+            {
+                case "Female":
+                    GenderId = 1;
+                    break;
+                case "Male":
+                    GenderId = 2;
+                    break;
+                case "Else":
+                    GenderId = 3;
+                    break;
+            }
+
             switch (selectedUserType)
             {
                 case "Trainee":
@@ -66,8 +81,12 @@ namespace WpfTali
                         Email = email,
                         Telephone = phone,
                         User_name = userName,
-                        Pass = password
-
+                        Pass = password,
+                        Born_date = (DateTime)born.SelectedDate,
+                        Joining_date = DateTime.Now,
+                        Photo = "",
+                        Num_id = Num_id,
+                        Id_gender = new Gender { Id = GenderId, Gender_name = gender}
                     };
 
                     apiservice.InsertATrainee(trainee);
