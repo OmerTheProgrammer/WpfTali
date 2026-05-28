@@ -1,121 +1,179 @@
-﻿using System;
+﻿using Model;
+using Service;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Model;
-using Service;
 using WpfTali.Pages;
 
 namespace WpfTali
 {
-    /// <summary>
-    /// Interaction logic for RegistrationPage.xaml
-    /// </summary>
     public partial class RegistrationPage : Page
     {
+        List<Gender> gList = new List<Gender>();
+        Apiservice apiservice = new Apiservice();
+
         public RegistrationPage()
         {
             InitializeComponent();
-
+            LoadGenderData();
         }
-        private void SignUpButton_Click(object sender, RoutedEventArgs e)
+
+        public async void LoadGenderData()
         {
-            string firstName = pName.Text;
-            string lastName = lName.Text;
-            string email = Email.Text;
-            string userName = UserName.Text;
-            string phone = telephone.Text;
-            string password = Pass.Password;
-            string gender = (GenderComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
-            DatePicker born=bornDate;
-            if (string.IsNullOrEmpty(gender))
+            try
+            {
+                gList = await apiservice.GetAllGender();
+                if (gList != null)
+                {
+                    List<string> genderNames = gList.Select(x => x.Gender_name).ToList();
+                    GenderComboBox.ItemsSource = genderNames;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading genders: " + ex.Message);
+            }
+        }
+
+        private async void SignUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            bool isin = true;
+            if (!Regex.IsMatch(Email.Text, @"^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+[a-zA-Z]+$"))
+            {
+                MessageBox.Show("Invalid email format. Please enter a valid email address.");
+                isin = false;
+            }
+            if (!Regex.IsMatch(telephone.Text, @"^05\d{8}$"))
+            {
+                    MessageBox.Show("Invalid phone number format. It should start with '05' and be followed by 8 digits.");
+                    isin = false;
+            }
+            if (!Regex.IsMatch(idNum.Text, @"^\d{5,9}$"))
+            {
+                MessageBox.Show("Invalid Id number format. It should be between 5 and 9 digits.");
+                isin = false;
+            }
+
+            if (GenderComboBox.SelectedItem == null)
             {
                 MessageBox.Show("Please select your gender");
+                isin = false;
                 return;
             }
 
-            Apiservice apiservice = new Apiservice();
-
-            // קבלת סוג המשתמש שנבחר
-            string selectedUserType =
-                (UserTypeComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
-
-            if (string.IsNullOrEmpty(selectedUserType))
+            var selectedUserTypeItem = UserTypeComboBox.SelectedItem as ComboBoxItem;
+            if (selectedUserTypeItem == null)
             {
                 MessageBox.Show("Please select kind of user");
+                isin = false;
                 return;
             }
-
-            switch (selectedUserType)
+            if (isin)
             {
-                case "Trainee":
-                    Trainee trainee = new Trainee()
+                string selectedUserType = selectedUserTypeItem.Content.ToString();
+                // 2. איסוף נתונים מהשדות
+                string firstName = pName.Text;
+                string lastName = lName.Text;
+                string email = Email.Text;
+                string userName = UserName.Text;
+                string phone = telephone.Text;
+                string password = Pass.Password;
+                string idCard = idNum.Text;
+                DateTime? bDate = bornDate.SelectedDate;
+
+                if (!bDate.HasValue)
+                {
+                    MessageBox.Show("Please select your birth date");
+                    return;
+                }
+                Gender selectedGenderObj = gList[GenderComboBox.SelectedIndex];
+                try
+                {
+                    switch (selectedUserType)
                     {
-                        First_name = firstName,
-                        Last_name = lastName,
-                        Email = email,
-                        Telephone = phone,
-                        User_name = userName,
-                        Pass = password
+                        case "Trainee":
+                            // הבאת מנוי בסיסי עבור מתאמן חדש
+                            List<Subscription> subscriptions = await apiservice.GetAllSubscription();
+                            Subscription selectedSub = subscriptions?.Find(s => s.Name_of_sub == "Basic");
 
-                    };
+                            Trainee trainee = new Trainee()
+                            {
+                                First_name = firstName,
+                                Last_name = lastName,
+                                Email = email,
+                                Telephone = phone,
+                                User_name = userName,
+                                Pass = password,
+                                Id_gender = selectedGenderObj,
+                                Born_date = bDate.Value.Date,
+                                Num_id = idCard,
+                                Health_Declaration = false,
+                                Joining_date = DateTime.Now.Date,
+                                Photo = "",
+                                Id_Sub = selectedSub
+                            };
 
-                    apiservice.InsertATrainee(trainee);
-                    NavigationService.Navigate(new HomePageTe());
-                    break;
+                            await apiservice.InsertATrainee(trainee);
+                            MessageBox.Show("Trainee registration successful!");
+                            NavigationService.Navigate(new LoginPage());
+                            break;
 
-                case "Trainer":
-                    Trainer trainer = new Trainer()
-                    {
-                        First_name = firstName,
-                        Last_name = lastName,
-                        Email = email,
-                        Telephone = phone,
-                        User_name = userName,
-                        Pass = password
-                    };
+                        case "Trainer":
+                            Trainer trainer = new Trainer()
+                            {
+                                First_name = firstName,
+                                Last_name = lastName,
+                                Email = email,
+                                Telephone = phone,
+                                User_name = userName,
+                                Pass = password,
+                                Id_gender = selectedGenderObj,
+                                Born_date = bDate.Value.Date,
+                                Num_id = idCard
+                            };
 
-                    apiservice.InsertATrainer(trainer);
-                    NavigationService.Navigate(new HomePageTr());
-                    break;
+                            await apiservice.InsertATrainer(trainer);
+                            MessageBox.Show("Trainer registration successful!");
+                            NavigationService.Navigate(new LoginPage());
+                            break;
 
-                case "Manager":
-                    Manager manager = new Manager()
-                    {
-                        First_name = firstName,
-                        Last_name = lastName,
-                        Email = email,
-                        Telephone = phone,
-                        User_name = userName,
-                        Pass = password
-                    };
+                        case "Manager":
+                            Manager manager = new Manager()
+                            {
+                                First_name = firstName,
+                                Last_name = lastName,
+                                Email = email,
+                                Telephone = phone,
+                                User_name = userName,
+                                Pass = password,
+                                Id_gender = selectedGenderObj,
+                                Born_date = bDate.Value.Date,
+                                Num_id = idCard
+                            };
 
-                    apiservice.InsertAManager(manager);
-                    NavigationService.Navigate(new HomePageMa());
-                    break;
-
+                            await apiservice.InsertAManager(manager);
+                            MessageBox.Show("Manager registration successful!");
+                            NavigationService.Navigate(new LoginPage());
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Registration failed: " + ex.Message);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please fill in all required fields.");
             }
         }
+        private void LogInButton_Click(object sender, RoutedEventArgs e) => NavigationService.Navigate(new LoginPage());
+        private void AboutUsButton_Click(object sender, RoutedEventArgs e) => NavigationService.Navigate(new AboutUsPage());
 
-
-        private void LogInButton_Click(object sender, RoutedEventArgs e)
-        {
-            NavigationService.Navigate(new LoginPage());   
-        }
-
-        private void AboutUsButton_Click(object sender, RoutedEventArgs e)
-        {
-           NavigationService.Navigate(new AboutUsPage());
-        }
+       
     }
 }

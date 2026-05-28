@@ -25,5 +25,10 @@ namespace WpfTali.Pages
         {
             InitializeComponent();
         }
+
+        private void GoBack_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new RegistrationPage());
+        }
     }
 }

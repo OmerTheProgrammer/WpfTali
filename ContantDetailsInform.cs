@@ -17,6 +17,8 @@ namespace WpfTali
         public string Contactgender { get; set; }
        public string Contactpassword { get; set; }
 
+        public string ContactidCard { get; set; }
+
 
 
     }

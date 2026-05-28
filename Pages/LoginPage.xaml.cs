@@ -80,21 +80,18 @@ namespace WpfTali
                 return;
             }
         }
-
         public void RunError(string errorMsg)
         {
             AppComment.Visibility = Visibility.Visible;
             AppComment.Text = errorMsg;
             AppComment.Foreground = Brushes.Red;
         }
-
         private async void Login_Click(object sender, RoutedEventArgs e)
         {
             await CheckUser();
             if (AppComment.Visibility == Visibility.Visible)
                 return;
         }
-
         private void SignUpButton_Click(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new RegistrationPage());
@@ -102,10 +99,8 @@ namespace WpfTali
 
         //private void Skip(object sender, RoutedEventArgs e)
         //{
-        //    emailText.Text = "danielandr2008@gmail.com";
-        //    passwordText.Password = "danik876";
-        //    NavigationService.Navigate(new HomePageTe());
-
+        //    emailText.Text = "Omer.Sher2@gmail.com";
+        //    passwordText.Password = "Fals637Om";
         //}
     }
 }

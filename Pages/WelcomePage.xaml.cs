@@ -28,20 +28,19 @@ namespace WpfTali
                 BackgroundVideo.Source = new Uri(path, UriKind.Absolute);
                 BackgroundVideo.Play();
          }
-
        private void BackgroundVideo_MediaEnded(object sender, RoutedEventArgs e)
         {
-           
-            BackgroundVideo.Position = TimeSpan.Zero; BackgroundVideo.Play();
-            
+            BackgroundVideo.Position = TimeSpan.Zero; BackgroundVideo.Play(); 
 
         }
-
         private void login(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new LoginPage());
         }
+        private void welcometo(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new LoginPage());
+        }
     }
-
  }
 

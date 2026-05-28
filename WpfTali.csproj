@@ -13,7 +13,9 @@
     <None Remove="images\1.png" />
     <None Remove="images\aboutusTali.png" />
     <None Remove="images\Fitali %283%29.png" />
+    <None Remove="images\moreinformation.jpg" />
     <None Remove="images\signup.png" />
+    <None Remove="images\UsercontrolPink2.png" />
     <None Remove="videos\we_are.mp4" />
   </ItemGroup>
 
@@ -32,7 +34,10 @@
       <HintPath>..\TaliFitMe\Fitaliproject\bin\Debug\net8.0\Model.dll</HintPath>
     </Reference>
     <Reference Include="Service">
-      <HintPath>..\TaliFitMe\Fitaliproject\bin\Debug\net8.0\Service.dll</HintPath>
+      <HintPath>..\TaliFitMe\TestApi1\bin\Debug\net8.0\Service.dll</HintPath>
+    </Reference>
+    <Reference Include="ViewModel">
+      <HintPath>..\TaliFitMe\ViewModel\bin\Debug\net8.0\ViewModel.dll</HintPath>
     </Reference>
   </ItemGroup>
 
@@ -49,12 +54,14 @@
     <Resource Include="images\Fitali (3).png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="images\moreinformation.jpg" />
     <Resource Include="images\signup.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="images\homepage.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="images\UsercontrolPink2.png" />
   </ItemGroup>
 
   <ItemGroup>

@@ -7,21 +7,15 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="WelcomePage">
-    <!--<Grid>-->
-            <MediaElement x:Name="BackgroundVideo" 
-                  LoadedBehavior="Manual"
-                  UnloadedBehavior="Stop"
-                  Stretch="UniformToFill"
-                  IsMuted="False"
-                  MediaEnded="BackgroundVideo_MediaEnded" />
-
-            <!--<Button x:Name="LogIn" 
-            Click="login" 
-            Width="100" 
-            Height="40" 
-            Background="White" 
-            Content="Log In" 
-            VerticalAlignment="Bottom" 
-            Margin="0,0,0,30" />-->
-        <!--</Grid>-->
-    </Page>
+    <Button x:Name="welcomeButton"  Click="welcometo" Background="Transparent"
+            BorderBrush="Transparent"
+            Padding="0"
+            Cursor="Hand">
+        <MediaElement x:Name="BackgroundVideo" 
+       LoadedBehavior="Manual"
+       UnloadedBehavior="Stop"
+       Stretch="UniformToFill"
+       IsMuted="False"
+       MediaEnded="BackgroundVideo_MediaEnded" />
+    </Button>
+</Page>

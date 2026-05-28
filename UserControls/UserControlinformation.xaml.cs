@@ -1,27 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿
+using System;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace WpfTali
 {
-    /// <summary>
-    /// Interaction logic for UserControlinformation.xaml
-    /// </summary>
     public partial class UserControlinformation : UserControl
     {
         public event EventHandler MyEvent;
-        public ContantDetailsInform ContactData { get;  set; }
+        public ContantDetailsInform ContactData { get; set; }
+
         public UserControlinformation()
         {
             InitializeComponent();
@@ -29,6 +16,12 @@ namespace WpfTali
         public UserControlinformation(ContantDetailsInform contactData)
         {
             InitializeComponent();
+            UpdateData(contactData);
+        }
+        public void UpdateData(ContantDetailsInform contactData)
+        {
+            if (contactData == null) return;
+
             ContactData = contactData;
             this.firstName.Text = contactData.ContactfirstName;
             this.lastName.Text = contactData.ContactlastName;
@@ -37,6 +30,9 @@ namespace WpfTali
             this.genderDisplay.Text = contactData.Contactgender;
             this.dateOfBirth.SelectedDate = contactData.Contactborn;
             this.passwordDisplay.Text = contactData.Contactpassword;
+            this.idCardDisplay.Text = contactData.ContactidCard; 
+
+
         }
     }
 }

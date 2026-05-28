@@ -1,5 +1,4 @@
-﻿
-<Page x:Class="WpfTali.RegistrationPage"
+﻿<Page x:Class="WpfTali.RegistrationPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -21,10 +20,10 @@
 
     <Grid Background="#F8F2F4">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,30,50,0">
-            <Button x:Name="Aboutus" Content="ABOUT US" Foreground="#be5e84" Background="White" Click="AboutUsButton_Click" FontSize="15"/>
+            <Button x:Name="Aboutus" Content="ABOUT US" Foreground="#be5e84" Background="White" Click="AboutUsButton_Click" FontSize="15" Padding="10,5"/>
         </StackPanel>
 
-        <Border Background="White" CornerRadius="2" MaxWidth="900" MaxHeight="550" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Border Background="White" CornerRadius="10" MaxWidth="900" MaxHeight="600" VerticalAlignment="Center" HorizontalAlignment="Center">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="25" ShadowDepth="0" Opacity="0.1" Color="Black"/>
             </Border.Effect>
@@ -36,8 +35,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Margin="45,20">
-
-                    <TextBlock Text="Sign up" FontFamily="/Fonts/#Alex Brush" FontSize="50" Foreground="#1a1a2e"/>
+                    <TextBlock Text="Sign up" FontSize="50" Foreground="#1a1a2e" Margin="0,0,0,20"/>
 
                     <Grid Margin="0,5">
                         <Grid.ColumnDefinitions>
@@ -46,19 +44,19 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Private name" FontSize="15" TextAlignment="Center"/>
+                            <TextBlock Text="Private name" FontSize="13"/>
                             <TextBox x:Name="pName" Style="{StaticResource ModernInputStyle}"/>
                         </StackPanel>
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Famliy name" FontSize="15" TextAlignment="Center" />
+                            <TextBlock Text="Family name" FontSize="13" />
                             <TextBox x:Name="lName" Style="{StaticResource ModernInputStyle}"/>
                         </StackPanel>
                     </Grid>
 
-                    <TextBlock Text="Email Address" FontSize="15" Margin="0,15,0,0" TextAlignment="Left"/>
-                    <TextBox x:Name="Email"  Style="{StaticResource ModernInputStyle}" Margin="0,0,0,15"/>
+                    <TextBlock Text="Email Address" FontSize="13" Margin="0,15,0,0"/>
+                    <TextBox x:Name="Email" Style="{StaticResource ModernInputStyle}" Margin="0,0,0,15"/>
 
-                    <TextBlock Text="User name" FontSize="15" HorizontalAlignment="Left"/>
+                    <TextBlock Text="User name" FontSize="13"/>
                     <TextBox x:Name="UserName" Style="{StaticResource ModernInputStyle}" Width="150" HorizontalAlignment="Left" Margin="0,0,0,15"/>
 
                     <Grid Margin="0,5">
@@ -68,12 +66,12 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Password" FontSize="15" TextAlignment="Center"/>
-                            <PasswordBox x:Name="Pass" Style="{StaticResource ModernInputStyle}" ToolTip="**********"/>
+                            <TextBlock Text="Password" FontSize="13"/>
+                            <PasswordBox x:Name="Pass" Style="{StaticResource ModernInputStyle}"/>
                         </StackPanel>
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Telephone" FontSize="15" TextAlignment="Center"/>
-                            <TextBox x:Name="telephone" Style="{StaticResource ModernInputStyle}" Margin="0,0,0,15"/>
+                            <TextBlock Text="Telephone" FontSize="13"/>
+                            <TextBox x:Name="telephone" Style="{StaticResource ModernInputStyle}"/>
                         </StackPanel>
                     </Grid>
 
@@ -84,36 +82,23 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Born date" FontSize="15" TextAlignment="Center"/>
-                            <DatePicker x:Name="bornDate" BorderThickness="0,0,0,1.5" Background="Transparent" VerticalAlignment="Bottom"/>
+                            <TextBlock Text="Born date" FontSize="13"/>
+                            <DatePicker x:Name="bornDate" BorderThickness="0,0,0,1.5" Background="Transparent"/>
                         </StackPanel>
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Id number" FontSize="15" TextAlignment="Center"/>
-                            <TextBox x:Name="idNum"  Style="{StaticResource ModernInputStyle}"/>
+                            <TextBlock Text="Id number" FontSize="13"/>
+                            <TextBox x:Name="idNum" Style="{StaticResource ModernInputStyle}"/>
                         </StackPanel>
                     </Grid>
 
-                    <StackPanel Grid.Column="2" Orientation="Horizontal">
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock x:Name="gender" Text="Gender"  FontSize="15" Width="150" TextAlignment="Center"/>
-                            <ComboBox  x:Name="GenderComboBox" Style="{StaticResource ModernInputStyle}" Width="120" HorizontalAlignment="Center" BorderThickness="0" FontSize="10" 
-                                 ItemsSource="{Binding Genders}"  
-                               SelectedItem="{Binding SelectedGender}"
-                               Padding="6,0"
-                               FontWeight="Bold">
-                                <ComboBoxItem Content="Male"/>
-                                <ComboBoxItem Content="Female"/>
-                                <ComboBoxItem Content="Else"/>
-                            </ComboBox>
+                    <StackPanel Orientation="Horizontal" Margin="0,10">
+                        <StackPanel Width="150">
+                            <TextBlock Text="Gender" FontSize="13" HorizontalAlignment="Center"/>
+                            <ComboBox x:Name="GenderComboBox" Style="{StaticResource ModernInputStyle}" Width="120" HorizontalAlignment="Center" FontSize="12"/>
                         </StackPanel>
-                        <StackPanel Orientation="Vertical">
-
-                            <TextBlock Text="kind of user" FontSize="15" HorizontalAlignment="Center"/>
-                            <ComboBox  x:Name="UserTypeComboBox" Style="{StaticResource ModernInputStyle}" Width="120" HorizontalAlignment="Left" BorderThickness="0" FontSize="10" 
-                              ItemsSource="{Binding users}"  
-                                 SelectedItem="{Binding SelectedKindofuser}"
-                                 Padding="6,0"
-                                  FontWeight="Bold">
+                        <StackPanel Width="150">
+                            <TextBlock Text="Kind of user" FontSize="13" HorizontalAlignment="Center"/>
+                            <ComboBox x:Name="UserTypeComboBox" Style="{StaticResource ModernInputStyle}" Width="120" HorizontalAlignment="Center" FontSize="12">
                                 <ComboBoxItem Content="Trainee"/>
                                 <ComboBoxItem Content="Trainer"/>
                                 <ComboBoxItem Content="Manager"/>
@@ -121,14 +106,16 @@
                         </StackPanel>
                     </StackPanel>
 
-                    <TextBlock Background="White"></TextBlock>
-                    <Button Content="Create Account" Click="SignUpButton_Click" FontFamily="/Fonts/#Alex Brush"  FontSize="18" Background="#f3cbdf" Foreground="White" Height="30"/>
-                    <TextBlock Background="White"></TextBlock>
-                    <Button x:Name="LogIn" Content="Log In" FontFamily="/Fonts/#Alex Brush"  FontSize="18" Background="White" Height="20" Foreground="#f3cbdf" Click="LogInButton_Click"/>
+                    <Button Content="Create Account" Click="SignUpButton_Click" FontSize="18" Background="#f3cbdf" Foreground="White" Height="40" Margin="0,20,0,10"/>
+                    <Button x:Name="LogIn" Content="Already have an account? Log In" FontSize="14" Background="Transparent" BorderThickness="0" Foreground="#be5e84" Click="LogInButton_Click"/>
                 </StackPanel>
 
                 <Grid Grid.Column="1" Margin="5">
-                    <Image Source="/images/signup.png" Stretch="UniformToFill"/>
+                    <Image Source="/images/signup.png" Stretch="UniformToFill">
+                        <Image.Clip>
+                            <RectangleGeometry Rect="0,0,1000,1000" RadiusX="10" RadiusY="10"/>
+                        </Image.Clip>
+                    </Image>
                 </Grid>
             </Grid>
         </Border>

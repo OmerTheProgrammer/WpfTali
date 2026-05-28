@@ -9,25 +9,75 @@
       Title="HomePageMa">
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="1*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="400"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <TextBlock Text="Welcome Dear managers to Fitali!" 
-                 HorizontalAlignment="Center" 
-                 VerticalAlignment="Center" 
-                 FontSize="30" 
-                 FontFamily="/Fonts/#Alex Brush"
-                 Foreground="Black"/>
-        <StackPanel Grid.Row="1" x:Name="spContacts" Orientation="Horizontal"/>
         <Grid.Background>
             <ImageBrush ImageSource="/images/homepage.png" Stretch="UniformToFill"/>
         </Grid.Background>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1.2*"/>
+            <ColumnDefinition Width="0.8*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="lblWelcome" 
+                   Text="Welcome to Fitali!" 
+                   Grid.ColumnSpan="2"
+                   HorizontalAlignment="Left" 
+                   VerticalAlignment="Center" 
+                   Margin="30,0,0,0"
+                   FontSize="30" 
+                   FontFamily="/Fonts/#Alex Brush"
+                   Foreground="Black"/>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" x:Name="spContacts" Orientation="Horizontal" Margin="0,0,42,43" />
+
+        <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" >
+            <Button x:Name="btnChangePhoto" Click="btnChangePhoto_Click" Cursor="Hand" Margin="5,-14,5,24">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter />
+                    </ControlTemplate>
+                </Button.Template>
+
+                <Ellipse x:Name="profileEllipse" Width="120" Height="108" Stroke="#f3cbdf" StrokeThickness="2">
+                    <Ellipse.Fill>
+                        <ImageBrush Stretch="UniformToFill" ImageSource="/images/homepage.png"/>
+                    </Ellipse.Fill>
+                </Ellipse>
+            </Button>
+            <Button x:Name="BtnWorkouts" Content="Workouts" Width="180" Height="40" 
+                    Background="#f3cbdf" FontSize="30" FontFamily="/Fonts/#Alex Brush"
+                    BorderBrush="Gray" BorderThickness="1" Click="BtnWorkouts_Click">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+
+            <Button x:Name="BtnSubscription" Content="Subscription" Width="180" Height="40" 
+                 Background="#f3cbdf" FontSize="30" FontFamily="/Fonts/#Alex Brush"
+                    BorderBrush="Gray" BorderThickness="1" Click="BtnSubscription_Click">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+            <Button x:Name="BtnPersonalData" Content="Personal Data" Width="180" Height="40" 
+              Background="#f3cbdf" FontSize="30" FontFamily="/Fonts/#Alex Brush"
+                    BorderBrush="Gray" BorderThickness="1" Click="BtnPersonalData_Click">
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+
+        </StackPanel>
     </Grid>
 </Page>
-
