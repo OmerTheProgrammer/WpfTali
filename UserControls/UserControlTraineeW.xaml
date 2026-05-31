@@ -6,7 +6,6 @@
              xmlns:local="clr-namespace:WpfTali.UserControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="400" FlowDirection="RightToLeft">
-
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

@@ -16,17 +16,13 @@ namespace WpfTali.UserControls
         private Apiservice apiService = new Apiservice();
         private Trainer currentTrainer;
         public ObservableCollection<WorkoutRowItem> WorkoutsRows { get; set; } = new ObservableCollection<WorkoutRowItem>();
-
         public List<Kinds_of_workouts> AvailableKinds { get; set; } = new List<Kinds_of_workouts>();
-
         private List<int> relationsToDelete = new List<int>();
-
         public UserControlTrainerW(Trainer trainer, List<WorkoutRowItem> initialRows)
         {
             InitializeComponent();
             this.currentTrainer = trainer;
             this.DataContext = this; 
-
             LoadAvailableKinds();
             UpdateData(initialRows);
         }
@@ -53,10 +49,8 @@ namespace WpfTali.UserControls
                 row.EditVisibility = Visibility.Collapsed;
                 WorkoutsRows.Add(row);
             }
-
             ItemsWorkoutsList.ItemsSource = null;
             ItemsWorkoutsList.ItemsSource = WorkoutsRows;
-
             ImgEditIcon.Source = new BitmapImage(new Uri("https://cdn-icons-png.flaticon.com/512/116/116996.png"));
             BtnAddWorkoutRow.Visibility = Visibility.Collapsed;
             isEditMode = false;

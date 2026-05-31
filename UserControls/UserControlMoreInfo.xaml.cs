@@ -17,17 +17,11 @@ namespace WpfTali.UserControls
         {
             InitializeComponent();
         }
-
-        // בנאי המקבל נתונים
         public UserControlMoreInfo(TrainerMoreInfo contactNewdata)
         {
             InitializeComponent();
             UpdateData(contactNewdata);
         }
-
-        /// <summary>
-        /// פונקציה לעדכון נתונים ידני (למשל מתוך ה-MainWindow)
-        /// </summary>
         public void SetCoachData(double paymet_per_hour, string certificate, bool experience, string description)
         {
             TxtViewPayment.Text = paymet_per_hour.ToString();
@@ -40,10 +34,6 @@ namespace WpfTali.UserControls
             CmbEditExperience.SelectedIndex = experience ? 0 : 1; // 0="Have", 1="Doesn't have"
             TxtEditDescription.Text = description;
         }
-
-        /// <summary>
-        /// אירוע לחיצה על כפתור העיפרון/שמירה
-        /// </summary>
         private void BtnEditMode_Click(object sender, RoutedEventArgs e)
         {
             if (!isEditMode)
@@ -75,7 +65,6 @@ namespace WpfTali.UserControls
                 MessageBox.Show("השינויים נשמרו בהצלחה!");
             }
         }
-
         public void UpdateData(TrainerMoreInfo contactNewdata)
         {
             if (contactNewdata == null)

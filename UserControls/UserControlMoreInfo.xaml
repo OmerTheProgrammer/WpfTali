@@ -4,10 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WpfTali.UserControls"
-             mc:Ignorable="d" 
-             d:DesignHeight="250" d:DesignWidth="400"
-              FontSize="14">
-
+             mc:Ignorable="d"  d:DesignHeight="250" d:DesignWidth="400" FontSize="14">
     <UserControl.Resources>
         <Style x:Key="LabelStyle" TargetType="TextBlock">
             <Setter Property="FontWeight" Value="Bold"/>
@@ -20,13 +17,10 @@
             <Setter Property="Margin" Value="0,2"/>
         </Style>
     </UserControl.Resources>
-
     <Grid>
         <Grid.Background>
-           
             <ImageBrush ImageSource="/images/UsercontrolPink2.png" Stretch="Fill"/>
         </Grid.Background>
-
         <Button x:Name="BtnEditMode" HorizontalAlignment="Right" VerticalAlignment="Top" 
                 Margin="20" Width="35" Height="35" Background="Transparent" BorderThickness="0" 
                 Click="BtnEditMode_Click">
@@ -42,57 +36,39 @@
                 </Style>
             </Button.Style>
         </Button>
-
         <Border CornerRadius="10" Padding="20" VerticalAlignment="Center" HorizontalAlignment="Center" 
                 MaxWidth="500">
             <StackPanel>
-                <TextBlock Text="Additional information:" FontSize="20" FontWeight="Bold"  FontFamily="/Fonts/#Alex Brush" Foreground="LightPink" 
-                           HorizontalAlignment="Center" Margin="0,0,0,20"/>
-
+                <TextBlock Text="Additional information:" FontSize="20" FontWeight="Bold"  FontFamily="/Fonts/#Alex Brush" Foreground="LightPink"  HorizontalAlignment="Center" Margin="0,0,0,20"/>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-
                         <ColumnDefinition Width="*"/>
-
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-
                         <RowDefinition Height="Auto"/>
-   
                         <RowDefinition Height="Auto"/>
-     
                         <RowDefinition Height="3"/>
-
                         <RowDefinition Height="Auto"/>
-
                     </Grid.RowDefinitions>
-
-
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Payment per hour:" FontSize="20" FontFamily="/Fonts/#Alex Brush" Style="{StaticResource LabelStyle}"/>
                     <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock x:Name="TxtViewPayment" Text="0" FontSize="16" Foreground="LightPink" FontWeight="Bold"/>
                         <TextBlock Text=" ₪" VerticalAlignment="Center"/>
                     </StackPanel>
-
-
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Certificate:" FontSize="20" FontFamily="/Fonts/#Alex Brush" Style="{StaticResource LabelStyle}"/>
                     <TextBlock x:Name="TxtViewCertificate" Grid.Row="1" Grid.Column="1" Text="Loading..." VerticalAlignment="Center"/>
                     <TextBox x:Name="TxtEditCertificate" Grid.Row="1" Grid.Column="1" Style="{StaticResource EditFieldStyle}"/>
-                 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Experience:" FontSize="20" FontFamily="/Fonts/#Alex Brush" Style="{StaticResource LabelStyle}"/>
                     <TextBlock x:Name="TxtViewExperience" Grid.Row="2" Grid.Column="1" Text="Loading..." VerticalAlignment="Center"/>
                     <ComboBox x:Name="CmbEditExperience" Grid.Row="2" Grid.Column="1" Style="{StaticResource EditFieldStyle}">
                         <ComboBoxItem Content="Have"/>
                         <ComboBoxItem Content="Doesn't have"/>
                     </ComboBox>
-
-
                     <TextBlock Grid.Row="4" Grid.Column="0" FontSize="20" Text="Description:"  FontFamily="/Fonts/#Alex Brush" Style="{StaticResource LabelStyle}" VerticalAlignment="Top" Margin="0,10,10,0"/>
                     <TextBlock x:Name="TxtViewDescription" Grid.Row="4" Grid.Column="1"  Text="Loading..." TextWrapping="Wrap" Margin="0,10,0,0"/>
-                    <TextBox x:Name="TxtEditDescription" Grid.Row="4" Grid.Column="1" Height="100" TextWrapping="Wrap" AcceptsReturn="True" 
-                             VerticalScrollBarVisibility="Auto" Style="{StaticResource EditFieldStyle}" Margin="0,10,0,0"/>
+                    <TextBox x:Name="TxtEditDescription" Grid.Row="4" Grid.Column="1" Height="100" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Style="{StaticResource EditFieldStyle}" Margin="0,10,0,0"/>
                 </Grid>
             </StackPanel>
         </Border>
