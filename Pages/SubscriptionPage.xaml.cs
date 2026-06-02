@@ -134,8 +134,17 @@ namespace WpfTali.Pages
                     }
                 }
 
-                currentTrainee.Id_Sub.Id =
-                    selectedPlanToBuy.id;
+                //currentTrainee.Id_Sub.Id =
+                //    selectedPlanToBuy.id;
+                // הגנה: בדיקה האם אובייקט המנוי של המתאמן הנוכחי הוא נאל
+                if (currentTrainee.Id_Sub == null)
+                {
+                    // יצירת מופע חדש של אובייקט המנוי כדי שלא יקרוס
+                    currentTrainee.Id_Sub = new Subscription();
+                }
+
+                // עכשיו בטוח לגמרי לעדכן את ה-ID של המנוי שלו!
+                currentTrainee.Id_Sub.Id = selectedPlanToBuy.id;
 
                 SubscriptionsList.Items.Refresh();
                 PaymentPanel.Visibility =
