@@ -36,7 +36,10 @@ namespace WpfTali.UserControls
                     AvailableKinds = kinds.Cast<Kinds_of_workouts>().ToList();
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading available kinds: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         public void UpdateData(List<WorkoutRowItem> initialRows)
         {

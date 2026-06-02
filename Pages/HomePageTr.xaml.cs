@@ -214,7 +214,7 @@ namespace WpfTali
                 MessageBox.Show($"Profile of: {data.ContactfirstName} {data.ContactlastName}");
             }
         }
-        private void Workouts(object sender, RoutedEventArgs e) => NavigationService.Navigate(new WorkoutsPage());
+        private void Workouts(object sender, RoutedEventArgs e) => NavigationService.Navigate(new WorkoutsPage(currentTrainer));
         private void MoreInfo(object sender, RoutedEventArgs e) => NavigationService.Navigate(new PageMoreInformation(currentTrainer));
     }
 }
