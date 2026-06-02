@@ -97,10 +97,10 @@ namespace WpfTali
             NavigationService.Navigate(new RegistrationPage());
         }
 
-        //private void Skip(object sender, RoutedEventArgs e)
-        //{
-        //    emailText.Text = "Omer.Sher2@gmail.com";
-        //    passwordText.Password = "Fals637Om";
-        //}
+        private void Skip(object sender, RoutedEventArgs e)
+        {
+            emailText.Text = "lianzazon4@gmail.com";
+            passwordText.Password = "LZ191207";
+        }
     }
 }
