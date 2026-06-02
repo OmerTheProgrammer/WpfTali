@@ -211,7 +211,7 @@ namespace WpfTali
         }
         private void Workouts(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new WorkoutsPage());
+            NavigationService.Navigate(new WorkoutsPage(currentTrainee));
         }
     }
 }
