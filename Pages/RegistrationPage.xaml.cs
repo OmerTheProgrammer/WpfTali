@@ -119,7 +119,9 @@ namespace WpfTali
 
                             await apiservice.InsertATrainee(trainee);
                             MessageBox.Show("Trainee registration successful!");
-                            NavigationService.Navigate(new LoginPage());
+
+                            // תיקון: העברת האובייקט החדש לבנאי של עמוד הבית
+                            NavigationService.Navigate(new HomePageTe(trainee));
                             break;
 
                         case "Trainer":
@@ -138,7 +140,9 @@ namespace WpfTali
 
                             await apiservice.InsertATrainer(trainer);
                             MessageBox.Show("Trainer registration successful!");
-                            NavigationService.Navigate(new LoginPage());
+
+                            // תיקון: העברת האובייקט החדש לבנאי של עמוד הבית
+                            NavigationService.Navigate(new HomePageTr(trainer));
                             break;
 
                         case "Manager":
@@ -157,9 +161,12 @@ namespace WpfTali
 
                             await apiservice.InsertAManager(manager);
                             MessageBox.Show("Manager registration successful!");
-                            NavigationService.Navigate(new LoginPage());
+
+                            // תיקון: העברת האובייקט החדש לבנאי של עמוד הבית
+                            NavigationService.Navigate(new HomePageMa(manager));
                             break;
                     }
+                    
                 }
                 catch (Exception ex)
                 {
