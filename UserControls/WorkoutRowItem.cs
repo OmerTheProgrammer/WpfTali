@@ -9,7 +9,7 @@ namespace WpfTali.UserControls
 {
     public  class WorkoutRowItem
     {
-        public int RelationId { get; set; } 
+        public int RelationId { get; set; } //id של WORKOUTS_OF_TRAINERS
         public int KindId { get; set; }     
         public string WorkoutName { get; set; }
         public int MaxPeople { get; set; }

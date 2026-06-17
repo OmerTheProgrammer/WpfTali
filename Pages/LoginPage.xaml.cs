@@ -52,7 +52,7 @@ namespace WpfTali
 
             Person person = pl.FirstOrDefault(p =>
                 p.Email == emailText.Text &&
-                p.Pass == passwordText.Password);
+                p.Pass == passwordText.Password);//מחזירה אובייקט ראשון שמתאים ל2 הנתונים
             AppComment.Visibility = Visibility.Collapsed;
             if (person == null)
             {
@@ -99,8 +99,8 @@ namespace WpfTali
 
         private void Skip(object sender, RoutedEventArgs e)
         {
-            emailText.Text = "lianzazon4@gmail.com";
-            passwordText.Password = "LZ191207";
+            emailText.Text = "Omer.Sher2@gmail.com";
+            passwordText.Password = "Fals637Om";
         }
     }
 }

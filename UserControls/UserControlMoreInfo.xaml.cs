@@ -51,10 +51,12 @@ namespace WpfTali.UserControls
                     ContactNewdate = new TrainerMoreInfo();
                 }
 
+                // 1. איסוף הנתונים המעודכנים מהשדות
                 ContactNewdate.ContactCertifications = TxtEditCertificate.Text;
                 ContactNewdate.ContactDescription = TxtEditDescription.Text;
                 ContactNewdate.ContactExperience = (CmbEditExperience.SelectedIndex == 0);
 
+                // 2. עדכון תצוגת הטקסט הרגילה
                 TxtViewCertificate.Text = string.IsNullOrEmpty(ContactNewdate.ContactCertifications) ? "Empty" : ContactNewdate.ContactCertifications;
                 TxtViewDescription.Text = string.IsNullOrEmpty(ContactNewdate.ContactDescription) ? "Empty" : ContactNewdate.ContactDescription;
                 TxtViewExperience.Text = ContactNewdate.ContactExperience ? "Have" : "Doesn't have";
@@ -62,7 +64,11 @@ namespace WpfTali.UserControls
                 ToggleVisibility(false);
                 ImgEditIcon.Source = new BitmapImage(new Uri("https://cdn-icons-png.flaticon.com/512/116/116996.png"));
 
-                MessageBox.Show("השינויים נשמרו בהצלחה!");
+                // ===== השינוי החשוב ביותר: הפעלת ה-Event כדי שעמוד האב ידע שיש לשמור למסד הנתונים =====
+                if (MyEvent != null)
+                {
+                    MyEvent(this, EventArgs.Empty);
+                }
             }
         }
         public void UpdateData(TrainerMoreInfo contactNewdata)

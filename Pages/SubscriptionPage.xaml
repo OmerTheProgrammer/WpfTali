@@ -1,5 +1,4 @@
-﻿
-<Page x:Class="WpfTali.Pages.SubscriptionPage"
+﻿<Page x:Class="WpfTali.Pages.SubscriptionPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -69,6 +68,6 @@
             </StackPanel>
         </Border>
 
-        <Button Content="Back" Click="back_Click_1" Background="Pink" FontFamily="/Fonts/#Alex Brush" Height="30" Width="50" Margin="600,225,-10,195"></Button>
+        <Button Content="Back" Click="back_Click_1" Background="Pink" FontFamily="/Fonts/#Alex Brush" Height="30" Width="50" Margin="600,225,-10,195"/>
     </Grid>
 </Page>

@@ -22,7 +22,9 @@
         <Grid.Background>
             <ImageBrush ImageSource="/images/homepage.png" Stretch="UniformToFill"/>
         </Grid.Background>
-
+        <Button x:Name="Aboutus" Content="ABOUT US"  Width="100" Background="#f3cbdf" Click="AboutUsButton_Click" FontSize="15" Padding="10,5" Margin="289,11,19,385" Grid.Column="1" Grid.RowSpan="2"/>
+        <Button x:Name="LogOut" Content="Log Out"  Width="100" Background="#f3cbdf"  FontFamily="/Fonts/#Alex Brush"
+Click="LogOutButton_Click" FontSize="18" Height="30" Padding="10,5" Grid.Row="1" Margin="137,378,166,12" Grid.RowSpan="2"/>
         <TextBlock x:Name="lblWelcome" 
                    Text="Welcome to Fitali!" 
                    HorizontalAlignment="Center" 

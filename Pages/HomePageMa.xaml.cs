@@ -205,6 +205,15 @@ namespace WpfTali
         {
             this.NavigationService?.Navigate(new Pages.ManagePeoplePage());
         }
+      private void AboutUsButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.NavigationService?.Navigate(new Pages.AboutUsPage());
+        }
+
+        private void LogOutButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.NavigationService?.Navigate(new LoginPage());
+        }
     }
 }
 

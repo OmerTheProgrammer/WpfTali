@@ -111,6 +111,7 @@ namespace WpfTali
 
                         profileEllipse.Fill = newBrush;
                     }
+                    currentTrainer.PhotoPath = null;
                     currentTrainer.Photo = base64String;
 
                     int result = await apiService.UpdateATrainer(currentTrainer);
@@ -172,9 +173,7 @@ namespace WpfTali
                 if (allWorkoutsRelations == null)
                     return;
 
-                var trainerWorkouts = allWorkoutsRelations
-                    .Where(w => w.Id_trainer != null && w.Id_trainer.Id == currentTrainer.Id)
-                    .ToList();
+                var trainerWorkouts = allWorkoutsRelations.Where(w => w.Id_trainer != null && w.Id_trainer.Id == currentTrainer.Id).ToList();// פעולה שמסננת רשימה לפי תנאי
 
                 List<WorkoutRowItem> finalWorkoutsList = new List<WorkoutRowItem>();
 
@@ -216,6 +215,15 @@ namespace WpfTali
         }
         private void Workouts(object sender, RoutedEventArgs e) => NavigationService.Navigate(new WorkoutsPage(currentTrainer));
         private void MoreInfo(object sender, RoutedEventArgs e) => NavigationService.Navigate(new PageMoreInformation(currentTrainer));
+        private void AboutUsButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.NavigationService?.Navigate(new AboutUsPage());
+        }
+
+        private void LogOutButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.NavigationService?.Navigate(new LoginPage());
+        }
     }
 }
 

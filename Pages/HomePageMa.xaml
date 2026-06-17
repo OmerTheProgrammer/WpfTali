@@ -22,7 +22,9 @@
             <RowDefinition Height="60"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
+        <Button x:Name="Aboutus" Content="ABOUT US"  Width="100" Background="#f3cbdf"  Click="AboutUsButton_Click" FontSize="15" Padding="10,5" Margin="199,10,28,0" Grid.Column="1"/>
+        <Button x:Name="LogOut" Content="Log Out"  Background="#f3cbdf"  FontFamily="/Fonts/#Alex Brush"
+ Click="LogOutButton_Click" FontSize="18" Width="100" Padding="10,5" Margin="85,321,85,29" Grid.Column="1" Grid.Row="1" Height="30"/>
         <TextBlock x:Name="lblWelcome" 
                    Text="Welcome to Fitali!" 
                    Grid.ColumnSpan="2"

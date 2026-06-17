@@ -1,6 +1,9 @@
-﻿
-using Model;
+﻿using Model;
+using Service;
+using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -9,221 +12,184 @@ namespace WpfTali.Pages
 {
     public partial class SubscriptionPage : Page
     {
-        // רשימת המנויים
-        public ObservableCollection<SubItem> Subscriptions
-        {
-            get;
-            set;
-        }
+        public ObservableCollection<SubItem> Subscriptions { get; set; }
 
-        // המנוי שנבחר
         private SubItem selectedPlanToBuy;
-
-        // המשתמש המחובר
+        private SubscriptionList apiSubs;
         private Trainee currentTrainee;
+        private readonly Apiservice _apiService = new Apiservice();
 
-        // constructor
         public SubscriptionPage(Trainee trainee)
         {
             InitializeComponent();
 
             currentTrainee = trainee;
 
-            // יצירת רשימת המנויים
-            Subscriptions =
-                new ObservableCollection<SubItem>
+            Subscriptions = new ObservableCollection<SubItem>();
+            SubscriptionsList.ItemsSource = Subscriptions;
+
+            LoadSubscriptionsAsync();
+        }
+
+        private async Task LoadSubscriptionsAsync()
+        {
+            try
             {
-                new SubItem
-                {
-                    id = 1,
-                    name_of_sub = "Once a week",
-                    price_display = "₪ 120.00",
-                    BackgroundColor = Brushes.White
-                },
+                apiSubs = await _apiService.GetAllSubscription();
 
-                new SubItem
+                if (apiSubs != null)
                 {
-                    id = 2,
-                    name_of_sub = "Twice a week",
-                    price_display = "₪ 240.00",
-                    BackgroundColor = Brushes.White
-                },
-
-                new SubItem
-                {
-                    id = 3,
-                    name_of_sub = "Three times a week",
-                    price_display = "₪ 360.00",
-                    BackgroundColor = Brushes.White
-                },
-
-                new SubItem
-                {
-                    id = 45,
-                    name_of_sub = "Four times a week",
-                    price_display = "₪ 480.00",
-                    BackgroundColor = Brushes.White
-                },
-
-                new SubItem
-                {
-                    id = 46,
-                    name_of_sub = "Five times a week",
-                    price_display = "₪ 600.00",
-                    BackgroundColor = Brushes.White
-                },
-
-                new SubItem
-                {
-                    id = 47,
-                    name_of_sub = "Every day",
-                    price_display = "₪ 720.00",
-                    BackgroundColor = Brushes.White
-                }
-            };
-
-            if (currentTrainee != null)
-            {
-                foreach (var plan in Subscriptions)
-                {
-                    if (currentTrainee.Id_Sub != null &&
-                        plan.id == currentTrainee.Id_Sub.Id)
+                    Subscriptions.Clear();
+                    foreach (Subscription sub in apiSubs)
                     {
-                        plan.BackgroundColor = Brushes.Pink;
+                        // בדיקה האם המנוי הזה הוא המנוי ששייך למתאמן כרגע
+                        Brush initialColor = Brushes.White;
+                        if (currentTrainee != null && currentTrainee.Id_Sub != null && sub.Id == currentTrainee.Id_Sub.Id)
+                        {
+                            initialColor = Brushes.Pink;
+                        }
+
+                        // שימי לב לשדה sub.price - אם באקסס השדה נקרא אחרת, שני אותו כאן!
+                        Subscriptions.Add(new SubItem
+                        {
+                            id = sub.Id,
+                            name_of_sub = sub.Name_of_sub,
+                            price_display = "₪ " + sub.Price,
+                            BackgroundColor = initialColor
+                        });
                     }
                 }
             }
-
-            SubscriptionsList.ItemsSource =
-                Subscriptions;
+            catch (Exception ex)
+            {
+                MessageBox.Show($"שגיאה בטעינת המנויים מבסיס הנתונים: {ex.Message}");
+            }
         }
 
-        private void Purchase_Click(
-            object sender,
-            RoutedEventArgs e)
+        private void Purchase_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
+            selectedPlanToBuy = button.DataContext as SubItem;
 
-            selectedPlanToBuy =
-                button.DataContext as SubItem;
+            // מילוי אוטומטי של פרטי המתאמן הקיים בטופס
+            if (currentTrainee != null)
+            {
+                TxtFirstName.Text = currentTrainee.First_name; // ודא שזה שם השדה ב-Trainee שלך
+                TxtUsername.Text = currentTrainee.User_name;   // ודא שזה שם השדה
+                TxtPhone.Text = currentTrainee.Telephone;
+                TxtEmail.Text = currentTrainee.Email;
+            }
 
-            PaymentPanel.Visibility =
-                Visibility.Visible;
-
+            PaymentPanel.Visibility = Visibility.Visible;
             SubscriptionsList.IsEnabled = false;
         }
 
-        private void ConfirmPurchase_Click(
-            object sender,
-            RoutedEventArgs e)
+        private async void ConfirmPurchase_Click(object sender, RoutedEventArgs e)
         {
             if (selectedPlanToBuy != null)
             {
+                // 1. עדכון ויזואלי של צבעי הכרטיסיות במסך
                 foreach (var plan in Subscriptions)
                 {
-                    if (plan.id ==
-                        selectedPlanToBuy.id)
+                    if (plan.id == selectedPlanToBuy.id)
                     {
-                        plan.BackgroundColor =
-                            Brushes.Pink;
+                        plan.BackgroundColor = Brushes.Pink;
+                        currentTrainee.Id_Sub = apiSubs.Find(s => s.Id == plan.id)!;
+                    }
+
+                    else
+                        plan.BackgroundColor = Brushes.White;
+                }
+
+                // נעדכן גם את ה-ID וגם את השם כדי שהאובייקט יהיה מלא ומסודר עבור ה-API
+                currentTrainee.Id_Sub.Id = selectedPlanToBuy.id;
+                currentTrainee.Id_Sub.Name_of_sub = selectedPlanToBuy.name_of_sub;
+
+                // 3. שליחה ל-API לשמירה באקסס
+                try
+                {
+                    this.IsEnabled = false; // חסימת המסך בזמן השמירה
+
+                    // שליחת המתאמן המעודכן ל-API
+                    int result = await _apiService.UpdateATrainee(currentTrainee);
+
+                    if (result > 0)
+                    {
+                        MessageBox.Show($"Success! Subscription saved to database. You are now subscribed to: {selectedPlanToBuy.name_of_sub}");
                     }
                     else
                     {
-                        plan.BackgroundColor =
-                            Brushes.White;
+                        // אם השרת החזיר 0 או מינוס, כנראה שיש בעיה בתוך ה-API (למשל שאילתת UPDATE לא נכונה)
+                        MessageBox.Show("השרת קיבל את הבקשה אך נכשלה השמירה במסד הנתונים. ודא ששדות ה-Trainee תקינים.");
                     }
                 }
-
-                //currentTrainee.Id_Sub.Id =
-                //    selectedPlanToBuy.id;
-                // הגנה: בדיקה האם אובייקט המנוי של המתאמן הנוכחי הוא נאל
-                if (currentTrainee.Id_Sub == null)
+                catch (Exception ex)
                 {
-                    // יצירת מופע חדש של אובייקט המנוי כדי שלא יקרוס
-                    currentTrainee.Id_Sub = new Subscription();
+                    MessageBox.Show($"שגיאה בתקשורת עם השרת: {ex.Message}");
                 }
-
-                // עכשיו בטוח לגמרי לעדכן את ה-ID של המנוי שלו!
-                currentTrainee.Id_Sub.Id = selectedPlanToBuy.id;
-
-                SubscriptionsList.Items.Refresh();
-                PaymentPanel.Visibility =
-                    Visibility.Collapsed;
-
-                SubscriptionsList.IsEnabled =
-                    true;
-
-                MessageBox.Show(
-                    $"Success! You are now subscribed to: {selectedPlanToBuy.name_of_sub}");
+                finally
+                {
+                    this.IsEnabled = true;
+                    PaymentPanel.Visibility = Visibility.Collapsed;
+                    SubscriptionsList.IsEnabled = true;
+                }
             }
         }
-        private void CancelSub_Click(
-            object sender,
-            RoutedEventArgs e)
+        private void CancelSub_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var plan in Subscriptions)
+            var button = sender as Button;
+            var clickedPlan = button.DataContext as SubItem;
+
+            if (clickedPlan != null)
             {
-                plan.BackgroundColor =
-                    Brushes.White;
+                clickedPlan.BackgroundColor = Brushes.White;
             }
-            currentTrainee.Id_Sub.Id = 0;
 
-            SubscriptionsList.Items.Refresh();
+            if (currentTrainee.Id_Sub != null)
+            {
+                currentTrainee.Id_Sub.Id = 0;
+            }
         }
 
-        private void Back_Click(
-            object sender,
-            RoutedEventArgs e)
+        private void Back_Click(object sender, RoutedEventArgs e)
         {
-            PaymentPanel.Visibility =
-                Visibility.Collapsed;
-
+            PaymentPanel.Visibility = Visibility.Collapsed;
             SubscriptionsList.IsEnabled = true;
         }
 
-        private void SubscriptionsList_SelectionChanged(
-            object sender,
-            SelectionChangedEventArgs e)
+        private void SubscriptionsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             SubscriptionsList.SelectedIndex = -1;
         }
 
-        private void back_Click_1(
-            object sender,
-            RoutedEventArgs e)
+        private void back_Click_1(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(
-                new HomePageTe(currentTrainee));
+            NavigationService.Navigate(new HomePageTe(currentTrainee));
+        }
+    }
+
+    // מחלקת עזר שמודיעה למסך לעדכן צבעים בזמן אמת בזכות ה-INotifyPropertyChanged
+    public class SubItem : INotifyPropertyChanged
+    {
+        public int id { get; set; }
+        public string name_of_sub { get; set; }
+        public string price_display { get; set; }
+
+        private Brush _backgroundColor;
+        public Brush BackgroundColor
+        {
+            get { return _backgroundColor; }
+            set
+            {
+                _backgroundColor = value;
+                OnPropertyChanged("BackgroundColor");
+            }
         }
 
-        public class SubItem
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName)
         {
-            public int id { get; set; }
-
-            public string name_of_sub
-            {
-                get;
-                set;
-            }
-
-            public string price_display
-            {
-                get;
-                set;
-            }
-
-            public Brush BackgroundColor
-            {
-                get;
-                set;
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
-
-
-
-
-
-
-

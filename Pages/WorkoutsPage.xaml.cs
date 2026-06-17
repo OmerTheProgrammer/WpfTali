@@ -2,6 +2,7 @@
 //using System.Collections.Generic;
 //using System.Collections.ObjectModel;
 //using System.Linq;
+//using System.Threading.Tasks;
 //using System.Windows;
 //using System.Windows.Controls;
 //using System.Windows.Media;
@@ -22,23 +23,18 @@
 //        private List<Training_registration> _allRegistrations = new List<Training_registration>();
 //        private List<Subscription> _allSubscriptions = new List<Subscription>();
 
-//        // משתני המשתמש המחובר כרגע
 //        private object _currentUser;
-//        private bool _isTrainer = false; // האם המשתמש הנוכחי הוא מאמן
+//        private bool _isTrainer = false;
 //        private int currentTraineeId = -1;
-//        private int currentTrainerId = -1; // מזהה המאמן במידה ונכנס מאמן
+//        private int currentTrainerId = -1;
 
-//        private DateTime _currentMonthDateTime = DateTime.Today;
+//        private DateTime _currentMonthDateTime = new DateTime(2026, 6, 1);
 
-//        // עדכון הבנאי לקבלת המשתמש המחובר
 //        public WorkoutsPage(object loggedInUser)
 //        {
 //            InitializeComponent();
 //            _currentUser = loggedInUser;
-
-//            // זיהוי סוג המשתמש שקיבלנו מהלוגין
 //            DetermineUserRole();
-
 //            Loaded += WorkoutsPage_Loaded;
 //        }
 
@@ -54,35 +50,39 @@
 //                _isTrainer = false;
 //                currentTraineeId = trainee.Id;
 //            }
-//            else
-//            {
-//                _isTrainer = false;
-//            }
 //        }
 
 //        private async void WorkoutsPage_Loaded(object sender, RoutedEventArgs e)
 //        {
+//            LoadingOverlay.Visibility = Visibility.Visible;
 //            try
 //            {
-//                _allPeople = (await _apiService.GetAllPerson())?.Cast<Person>().ToList() ?? new List<Person>();
-//                _allTrainees = (await _apiService.GetAllTrainee())?.Cast<Trainee>().ToList() ?? new List<Trainee>();
-//                _allKinds = (await _apiService.GetAllKinds_of_workouts())?.Cast<Kinds_of_workouts>().ToList() ?? new List<Kinds_of_workouts>();
-//                _allExcWorkouts = (await _apiService.GetAllList_of_Exc_workouts())?.Cast<List_of_Exc_workouts>().ToList() ?? new List<List_of_Exc_workouts>();
-//                _allRegistrations = (await _apiService.GetAllTraining_registration())?.Cast<Training_registration>().ToList() ?? new List<Training_registration>();
-//                _allSubscriptions = (await _apiService.GetAllSubscription())?.Cast<Subscription>().ToList() ?? new List<Subscription>();
+//                await Task.Run(async () =>
+//                {
+//                    _allPeople = (await _apiService.GetAllPerson())?.Cast<Person>().ToList() ?? new List<Person>();
+//                    _allTrainees = (await _apiService.GetAllTrainee())?.Cast<Trainee>().ToList() ?? new List<Trainee>();
+//                    _allKinds = (await _apiService.GetAllKinds_of_workouts())?.Cast<Kinds_of_workouts>().ToList() ?? new List<Kinds_of_workouts>();
+//                    _allExcWorkouts = (await _apiService.GetAllList_of_Exc_workouts())?.Cast<List_of_Exc_workouts>().ToList() ?? new List<List_of_Exc_workouts>();
+//                    _allRegistrations = (await _apiService.GetAllTraining_registration())?.Cast<Training_registration>().ToList() ?? new List<Training_registration>();
+//                    _allSubscriptions = (await _apiService.GetAllSubscription())?.Cast<Subscription>().ToList() ?? new List<Subscription>();
+//                });
 
 //                if (!_isTrainer && currentTraineeId == -1 && _allTrainees.Count > 0)
 //                {
-//                    currentTraineeId = _allTrainees.First().Id;
+//                    var personUser = _currentUser as Trainee;
+//                    if (personUser != null) currentTraineeId = personUser.Id;
 //                }
 
 //                ApplyRolePermissions();
-
 //                DisplayMonth(_currentMonthDateTime);
 //            }
 //            catch (Exception ex)
 //            {
-//                MessageBox.Show($"שגיאה בטעינת הנתונים מהשרת: {ex.Message}");
+//                MessageBox.Show($"שגיאה בתקשורת: {ex.Message}");
+//            }
+//            finally
+//            {
+//                LoadingOverlay.Visibility = Visibility.Collapsed;
 //            }
 //        }
 
@@ -101,38 +101,37 @@
 //            }
 //        }
 
+//        private void BtnBackToHome_Click(object sender, RoutedEventArgs e)
+//        {
+//            if (NavigationService != null)
+//            {
+//                if (_isTrainer)
+//                {
+//                    // המרה של המשתמש הכללי לטיפוס מאמן ומסירתו לעמוד הבית של המאמנים
+//                    Trainer currentTrainer = _currentUser as Trainer;
+//                    NavigationService.Navigate(new HomePageTr(currentTrainer));
+//                }
+//                else
+//                {
+//                    // המרה של המשתמש הכללי לטיפוס מתאמן ומסירתו לעמוד הבית של המתאמנים
+//                    Trainee currentTrainee = _currentUser as Trainee;
+//                    NavigationService.Navigate(new HomePageTe(currentTrainee));
+//                }
+//            }
+//        }
+
 //        private void DisplayMonth(DateTime monthDate)
 //        {
 //            string hebrewMonth = monthDate.ToString("MMMM yyyy", new System.Globalization.CultureInfo("he-IL"));
 //            MonthYearTextBlock.Text = hebrewMonth;
 
 //            int daysInMonth = DateTime.DaysInMonth(monthDate.Year, monthDate.Month);
-
-//            var days = Enumerable.Range(1, daysInMonth).Select(day => {
-//                var date = new DateTime(monthDate.Year, monthDate.Month, day);
-//                return new
-//                {
-//                    Date = date,
-//                    DayNumber = day.ToString(),
-//                    DayOfWeekHebrew = date.ToString("ddd", new System.Globalization.CultureInfo("he-IL"))
-//                };
+//            var days = Enumerable.Range(1, daysInMonth).Select(day => {var date = new DateTime(monthDate.Year, monthDate.Month, day);
+//                return new { Date = date, DayNumber = day.ToString(), DayOfWeekHebrew = date.ToString("ddd", new System.Globalization.CultureInfo("he-IL")) };
 //            }).ToList();
 
 //            DaysListBox.ItemsSource = days;
-
-//            if (monthDate.Year == DateTime.Today.Year && monthDate.Month == DateTime.Today.Month)
-//            {
-//                DaysListBox.SelectedIndex = DateTime.Today.Day - 1;
-//            }
-//            else
-//            {
-//                DaysListBox.SelectedIndex = 0;
-//            }
-
-//            if (DaysListBox.SelectedItem != null)
-//            {
-//                DaysListBox.ScrollIntoView(DaysListBox.SelectedItem);
-//            }
+//            DaysListBox.SelectedIndex = (monthDate.Year == DateTime.Today.Year && monthDate.Month == DateTime.Today.Month) ? DateTime.Today.Day - 1 : 0;
 //        }
 
 //        private void NextMonthButton_Click(object sender, RoutedEventArgs e)
@@ -152,11 +151,8 @@
 //        private void DaysListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 //        {
 //            if (DaysListBox.SelectedItem == null) return;
-
 //            dynamic selectedDay = DaysListBox.SelectedItem;
-//            DateTime targetDate = selectedDay.Date;
-
-//            LoadWorkoutsForDate(targetDate);
+//            LoadWorkoutsForDate(selectedDay.Date);
 //            DetailsPanel.Visibility = Visibility.Collapsed;
 //        }
 
@@ -165,11 +161,11 @@
 //            var dailyWorkouts = _allExcWorkouts
 //                .Where(w => w.Workout_date.Date == date.Date)
 //                .Select(w => {
-//                    var kind = _allKinds.FirstOrDefault(k => k.Id == w.Id_kindOf_workouts.Id);
-//                    var trainerData = _allPeople.FirstOrDefault(p => p.Id == w.Id_trainer.Id);
-
+//                    var kind = _allKinds.FirstOrDefault(k => k.Id == w.Id_kindOf_workouts?.Id);
+//                    var trainerData = _allPeople.FirstOrDefault(p => p.Id == w.Id_trainer?.Id);
 //                    int bookedCount = _allRegistrations.Count(r => r.Id_excWorkouts != null && r.Id_excWorkouts.Id == w.Id);
 //                    bool isRegistered = _allRegistrations.Any(r => r.Id_excWorkouts != null && r.Id_trainee != null && r.Id_excWorkouts.Id == w.Id && r.Id_trainee.Id == currentTraineeId);
+
 //                    return new WorkoutDisplayItem
 //                    {
 //                        RawWorkout = w,
@@ -187,7 +183,6 @@
 //        {
 //            var selectedItem = WorkoutsListView.SelectedItem as WorkoutDisplayItem;
 //            if (selectedItem == null) return;
-
 //            RefreshDetailsPanel(selectedItem);
 //            DetailsPanel.Visibility = Visibility.Visible;
 //        }
@@ -203,10 +198,10 @@
 //            DetailStatus.Text = $"סטטוס: {item.StatusText}";
 
 //            UpdateRegisteredTraineesList(item.RawWorkout.Id);
-
 //            UpdateActionButtonState(item);
 
-//            if (_isTrainer && item.RawWorkout.Id_trainer != null && item.RawWorkout.Id_trainer.Id == currentTrainerId)
+//            bool isOwnWorkout = item.RawWorkout.Id_trainer?.Id == currentTrainerId;
+//            if (_isTrainer && isOwnWorkout)
 //            {
 //                DeleteWorkoutButton.Visibility = Visibility.Visible;
 //            }
@@ -218,14 +213,12 @@
 
 //        private void UpdateRegisteredTraineesList(int workoutId)
 //        {
-//            var traineeIds = _allRegistrations
+//            var activeRegs = _allRegistrations
 //                .Where(r => r.Id_excWorkouts != null && r.Id_excWorkouts.Id == workoutId && r.Id_trainee != null)
 //                .Select(r => r.Id_trainee.Id)
 //                .ToList();
 
-//            var registeredPeople = _allPeople
-//                .Where(p => traineeIds.Contains(p.Id))
-//                .ToList();
+//            var registeredPeople = _allPeople.Where(p => activeRegs.Contains(p.Id)).ToList();
 
 //            RegisteredTraineesListView.ItemsSource = null;
 //            RegisteredTraineesListView.ItemsSource = registeredPeople;
@@ -233,14 +226,15 @@
 
 //        private void UpdateActionButtonState(WorkoutDisplayItem item)
 //        {
+//            if (_isTrainer) return;
+
 //            if (item.RawWorkout.Workout_date < DateTime.Now)
 //            {
-//                ActionButton.Content = "אימון זה כבר עבר";
+//                ActionButton.Content = "אימון זה עבר";
 //                ActionButton.Background = Brushes.DarkGray;
 //                ActionButton.IsEnabled = false;
 //                return;
 //            }
-
 //            ActionButton.IsEnabled = true;
 
 //            if (item.IsUserRegistered)
@@ -248,14 +242,9 @@
 //                ActionButton.Content = "ביטול רישום";
 //                ActionButton.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#333333"));
 //            }
-//            else if (item.IsFull)
-//            {
-//                ActionButton.Content = "כניסה לרשימת המתנה";
-//                ActionButton.Background = Brushes.Orange;
-//            }
 //            else
 //            {
-//                ActionButton.Content = "הרשמה לאימון";
+//                ActionButton.Content = item.IsFull ? "כניסה להמתנה" : "הרשמה לאימון";
 //                ActionButton.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF1493"));
 //            }
 //        }
@@ -265,74 +254,129 @@
 //            var itemToUpdate = WorkoutsListView.SelectedItem as WorkoutDisplayItem;
 //            if (itemToUpdate == null) return;
 
-//            if (itemToUpdate.RawWorkout.Workout_date < DateTime.Now)
+//            LoadingOverlay.Visibility = Visibility.Visible;
+//            try
 //            {
-//                MessageBox.Show("לא ניתן לבצע פעולות ברישום עבור אימון שכבר עבר.", "האירוע עבר", MessageBoxButton.OK, MessageBoxImage.Warning);
-//                return;
-//            }
-
-//            var workoutId = itemToUpdate.RawWorkout.Id;
-
-//            if (itemToUpdate.IsUserRegistered)
-//            {
-//                var registration = _allRegistrations.FirstOrDefault(r => r.Id_excWorkouts != null && r.Id_trainee != null && r.Id_excWorkouts.Id == workoutId && r.Id_trainee.Id == currentTraineeId);
-//                if (registration != null)
+//                if (itemToUpdate.IsUserRegistered)
 //                {
-//                    int res = await _apiService.DeleteATraining_registration(registration.Id);
-//                    if (res > 0)
+//                    var registration = _allRegistrations.FirstOrDefault(r => r.Id_excWorkouts != null && r.Id_trainee != null && r.Id_excWorkouts.Id == itemToUpdate.RawWorkout.Id && r.Id_trainee.Id == currentTraineeId);
+//                    if (registration != null)
 //                    {
-//                        _allRegistrations.Remove(registration);
-//                        itemToUpdate.CurrentBooked--;
-//                        itemToUpdate.IsUserRegistered = false;
-
-//                        MessageBox.Show("ההרשמה בוטלה בהצלחה.");
+//                        int res = await _apiService.DeleteATraining_registration(registration.Id);
+//                        if (res > 0)
+//                        {
+//                            _allRegistrations.Remove(registration);
+//                            itemToUpdate.CurrentBooked--;
+//                            itemToUpdate.IsUserRegistered = false;
+//                            MessageBox.Show("הרישום בוטל בהצלחה.");
+//                        }
 //                    }
-//                    else
-//                    {
-//                        MessageBox.Show("פעולת הביטול נכשלה בשרת.");
-//                    }
-//                }
-//            }
-//            else
-//            {
-//                if (!CheckSubscriptionLimit())
-//                {
-//                    MessageBox.Show("אזהרה: עברת את מגבלת האימונים השבועית!", "מגבלת מנוי", MessageBoxButton.OK, MessageBoxImage.Warning);
-//                    return;
-//                }
-
-//                var currentTraineeObj = _allTrainees.FirstOrDefault(t => t.Id == currentTraineeId);
-//                var currentWorkoutObj = _allExcWorkouts.FirstOrDefault(w => w.Id == workoutId);
-//                var newReg = new Training_registration
-//                {
-//                    Id_trainee = currentTraineeObj,
-//                    Id_excWorkouts = currentWorkoutObj
-//                };
-
-//                int res = await _apiService.InsertATraining_registration(newReg);
-//                if (res > 0)
-//                {
-//                    newReg.Id = res;
-//                    _allRegistrations.Add(newReg);
-//                    itemToUpdate.CurrentBooked++;
-//                    itemToUpdate.IsUserRegistered = true;
-
-//                    MessageBox.Show(itemToUpdate.IsFull ? "נכנסת לרשימת ההמתנה בהצלחה!" : "נרשמת לאימון בהצלחה!");
 //                }
 //                else
 //                {
-//                    MessageBox.Show("פעולת ההרשמה נכשלה בשרת.");
-//                }
-//            }
+//                    var currentTraineeObj = _allTrainees.FirstOrDefault(t => t.Id == currentTraineeId) ?? new Trainee { Id = currentTraineeId };
+//                    var currentWorkoutObj = _allExcWorkouts.FirstOrDefault(w => w.Id == itemToUpdate.RawWorkout.Id);
 
-//            RefreshDetailsPanel(itemToUpdate);
+//                    var newReg = new Training_registration { Id_trainee = currentTraineeObj, Id_excWorkouts = currentWorkoutObj };
+//                    int res = await _apiService.InsertATraining_registration(newReg);
+//                    if (res > 0)
+//                    {
+//                        newReg.Id = res;
+//                        _allRegistrations.Add(newReg);
+//                        itemToUpdate.CurrentBooked++;
+//                        itemToUpdate.IsUserRegistered = true;
+//                        MessageBox.Show("נרשמת בהצלחה!");
+//                    }
+//                }
+//                RefreshDetailsPanel(itemToUpdate);
+//            }
+//            catch (Exception ex) { MessageBox.Show($"שגיאה בביצוע הפעולה: {ex.Message}"); }
+//            finally { LoadingOverlay.Visibility = Visibility.Collapsed; }
 //        }
 
-//        private void BackButton_Click(object sender, RoutedEventArgs e)
+//        private void AddWorkoutButton_Click(object sender, RoutedEventArgs e)
 //        {
-//            if (NavigationService.CanGoBack)
+//            AddWorkoutPopup.IsOpen = true;
+//            if (DaysListBox.SelectedItem != null) { dynamic selectedDay = DaysListBox.SelectedItem; DpDate.SelectedDate = selectedDay.Date; }
+//            else { DpDate.SelectedDate = DateTime.Today; }
+//            TxtTime.Text = "18:00";
+//            TxtKindId.Clear();
+//            TxtTrainerId.Text = currentTrainerId.ToString();
+//        }
+
+//        private void BtnCancelPopup_Click(object sender, RoutedEventArgs e)
+//        {
+//            AddWorkoutPopup.IsOpen = false;
+//        }
+
+//        private async void BtnSaveWorkout_Click(object sender, RoutedEventArgs e)
+//        {
+//            if (DpDate.SelectedDate == null || string.IsNullOrWhiteSpace(TxtTime.Text) || string.IsNullOrWhiteSpace(TxtKindId.Text))
 //            {
-//                NavigationService.GoBack();
+//                MessageBox.Show("נא למלא את כל השדות!");
+//                return;
+//            }
+
+//            if (!int.TryParse(TxtKindId.Text, out int kindId))
+//            {
+//                MessageBox.Show("קוד סוג האימון חייב להיות מספר.");
+//                return;
+//            }
+
+//            var selectedKind = _allKinds.FirstOrDefault(k => k.Id == kindId);
+//            if (selectedKind == null)
+//            {
+//                MessageBox.Show($"שגיאה: קוד סוג אימון {kindId} לא קיים במערכת. נא להזין קוד תקין.");
+//                return;
+//            }
+
+//            AddWorkoutPopup.IsOpen = false;
+//            LoadingOverlay.Visibility = Visibility.Visible;
+
+//            try
+//            {
+//                DateTime selectedDate = DpDate.SelectedDate.Value;
+//                string[] timeParts = TxtTime.Text.Split(':');
+//                if (timeParts.Length == 2 && int.TryParse(timeParts[0], out int hour) && int.TryParse(timeParts[1], out int minute))
+//                {
+//                    selectedDate = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hour, minute, 0);
+//                }
+
+//                var currentTrainerObj = _currentUser as Trainer;
+
+//                var newWorkout = new List_of_Exc_workouts
+//                {
+//                    Workout_date = selectedDate,
+//                    Id_kindOf_workouts = selectedKind,
+//                    Id_trainer = currentTrainerObj
+//                };
+
+//                int newId = await _apiService.InsertAList_of_Exc_workouts(newWorkout);
+//                if (newId > 0)
+//                {
+//                    newWorkout.Id = newId;
+
+//                    newWorkout.Id_kindOf_workouts = selectedKind;
+//                    newWorkout.Id_trainer = currentTrainerObj;
+
+//                    _allExcWorkouts.Add(newWorkout);
+//                    MessageBox.Show("האימון התווסף בהצלחה למערכת של פיטלי (Fitali)!");
+
+//                    dynamic selectedDay = DaysListBox.SelectedItem;
+//                    if (selectedDay != null) LoadWorkoutsForDate(selectedDay.Date);
+//                }
+//                else
+//                {
+//                    MessageBox.Show("השרת סירב להוסיף את האימון. ודא שכל הנתונים תקינים.");
+//                }
+//            }
+//            catch (Exception ex)
+//            {
+//                MessageBox.Show($"שגיאה בהוספת אימון: {ex.Message}");
+//            }
+//            finally
+//            {
+//                LoadingOverlay.Visibility = Visibility.Collapsed;
 //            }
 //        }
 
@@ -341,174 +385,51 @@
 //            var itemToDelete = WorkoutsListView.SelectedItem as WorkoutDisplayItem;
 //            if (itemToDelete == null) return;
 
-//            var result = MessageBox.Show($"האם אתה בטוח שברצונך לבטל ולמחוק את אימון ה-{itemToDelete.WorkoutName} לחלוטין?", "אישור מחיקה", MessageBoxButton.YesNo, MessageBoxImage.Question);
+//            if (itemToDelete.RawWorkout.Id_trainer?.Id != currentTrainerId)
+//            {
+//                MessageBox.Show("אינך מורשה למחוק אימון זה כיוון שהוא משויך למאמן אחר.", "חסימת אבטחה", MessageBoxButton.OK, MessageBoxImage.Stop);
+//                return;
+//            }
+
+//            var result = MessageBox.Show($"האם אתה בטוח שברצונך למחוק את אימון ה-{itemToDelete.WorkoutName}?", "אישור מחיקה", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 //            if (result == MessageBoxResult.Yes)
 //            {
-//                // קריאה לפונקציית המחיקה של האימון ב-API
-//                int res = await _apiService.DeleteAList_of_Exc_workouts(itemToDelete.RawWorkout.Id);
-//                if (res > 0)
+//                LoadingOverlay.Visibility = Visibility.Visible;
+//                try
 //                {
-//                    MessageBox.Show("האימון נמחק בהצלחה.");
-//                    _allExcWorkouts.Remove(itemToDelete.RawWorkout);
+//                    if (await _apiService.DeleteAList_of_Exc_workouts(itemToDelete.RawWorkout.Id) > 0)
+//                    {
+//                        _allExcWorkouts.Remove(itemToDelete.RawWorkout);
+//                        MessageBox.Show("האימון נמחק בהצלחה.");
 
-//                    dynamic selectedDay = DaysListBox.SelectedItem;
-//                    if (selectedDay != null) LoadWorkoutsForDate(selectedDay.Date);
-//                    DetailsPanel.Visibility = Visibility.Collapsed;
+//                        dynamic selectedDay = DaysListBox.SelectedItem;
+//                        if (selectedDay != null) LoadWorkoutsForDate(selectedDay.Date);
+//                        DetailsPanel.Visibility = Visibility.Collapsed;
+//                    }
+//                    else
+//                    {
+//                        MessageBox.Show("מחיקת האימון נכשלה בשרת.");
+//                    }
 //                }
-//                else
+//                catch (Exception ex)
 //                {
-//                    MessageBox.Show("מחיקת האימון נכשלה בשרת.");
+//                    MessageBox.Show($"שגיאה במחיקה: {ex.Message}");
 //                }
-//            }
-//        }
-
-//        private bool CheckSubscriptionLimit()
-//        {
-//            var trainee = _allTrainees.FirstOrDefault(t => t.Id == currentTraineeId);
-//            if (trainee == null || trainee.Id_Sub == null) return true;
-
-//            var sub = _allSubscriptions.FirstOrDefault(s => s.Id == trainee.Id_Sub.Id);
-//            if (sub == null) return true;
-
-//            int maxAllowedPerWeek = 3;
-//            if (sub.Name_of_sub.Contains("חופשי חודשי") || sub.Name_of_sub.Contains("ללא הגבלה")) maxAllowedPerWeek = int.MaxValue;
-//            else if (sub.Name_of_sub.Contains("דו שבועי")) maxAllowedPerWeek = 2;
-//            else if (sub.Name_of_sub.Contains("חד שבועי")) maxAllowedPerWeek = 1;
-
-//            DateTime startOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
-//            DateTime endOfWeek = startOfWeek.AddDays(7);
-
-//            var bookedThisWeekCount = _allRegistrations.Count(r =>
-//                r.Id_trainee != null && r.Id_trainee.Id == currentTraineeId &&
-//                _allExcWorkouts.Any(w => r.Id_excWorkouts != null && w.Id == r.Id_excWorkouts.Id && w.Workout_date >= startOfWeek && w.Workout_date < endOfWeek)
-//            );
-
-//            return bookedThisWeekCount < maxAllowedPerWeek;
-//        }
-
-//        // ========================================================
-//        // קוד פונקציות ה-Popup החדשות עבור הוספת האימון
-//        // ========================================================
-
-//        /// <summary>
-//        /// פתיחת חלונית ה-Popup הפנימית (בלחיצה על הוספת אימון)
-//        /// </summary>
-//        /// <summary>
-//        /// פתיחת חلوנית ה-Popup הפנימית (בלחיצה על הוספת אימון)
-//        /// </summary>
-//        private void AddWorkoutButton_Click(object sender, RoutedEventArgs e)
-//        {
-//            AddWorkoutPopup.IsOpen = true;
-
-//            // ברירת מחדל: מילוי התאריך הנוכחי שנבחר בלוח השנה, או היום
-//            if (DaysListBox.SelectedItem != null)
-//            {
-//                dynamic selectedDay = DaysListBox.SelectedItem;
-//                DpDate.SelectedDate = selectedDay.Date;
-//            }
-//            else
-//            {
-//                DpDate.SelectedDate = DateTime.Today;
-//            }
-
-//            TxtTime.Text = DateTime.Now.ToString("HH:mm");
-//            TxtKindId.Clear();
-
-//            // מילוי חובה של ה-ID של המאמן המחובר - אי אפשר לשנות את זה ידנית בגלל ה-IsReadOnly ב-XAML
-//            if (currentTrainerId != -1)
-//            {
-//                TxtTrainerId.Text = currentTrainerId.ToString();
-//            }
-//            else
-//            {
-//                TxtTrainerId.Clear();
-//                MessageBox.Show("שים לב: לא זוהה מזהה מאמן מחובר במערכת.");
-//            }
-//        }
-
-//        /// <summary>
-//        /// ביטול וסגירת ה-Popup הפנימי
-//        /// </summary>
-//        private void BtnCancelPopup_Click(object sender, RoutedEventArgs e)
-//        {
-//            AddWorkoutPopup.IsOpen = false;
-//        }
-
-//        /// <summary>
-//        /// שמירת האימון החדש מה-Popup למסד הנתונים
-//        /// </summary>
-//        private async void BtnSaveWorkout_Click(object sender, RoutedEventArgs e)
-//        {
-//            try
-//            {
-//                // 1. בדיקת תקינות בסיסית של שדות טקסט ומספרים
-//                if (DpDate.SelectedDate == null || !int.TryParse(TxtKindId.Text, out int kindId) || !int.TryParse(TxtTrainerId.Text, out int trainerId))
+//                finally
 //                {
-//                    MessageBox.Show("נא למלא תאריך, קוד סוג אימון וקוד מאמן תקינים.");
-//                    return;
+//                    LoadingOverlay.Visibility = Visibility.Collapsed;
 //                }
-
-//                // 2. המרה וחיבור של השעה והתאריך
-//                DateTime baseDate = DpDate.SelectedDate.Value;
-//                if (!TimeSpan.TryParse(TxtTime.Text, out TimeSpan timeParsed))
-//                {
-//                    MessageBox.Show("נא להזין שעה תקינה בפורמט HH:mm (לדוגמה: 15:30)");
-//                    return;
-//                }
-//                DateTime fullDateTime = baseDate.Date + timeParsed;
-
-//                // 3. שליפה ואימות מול הרשימות שכבר נטענו מהשרת
-//                var matchedKind = _allKinds.FirstOrDefault(k => k.Id == kindId);
-//                // שליפת המאמן מרשימת ה-People או בדיקה ישירה
-//                var allTrainers = await _apiService.GetAllTrainer();
-//                var matchedTrainer = allTrainers?.Cast<Trainer>().FirstOrDefault(t => t.Id == trainerId);
-
-//                if (matchedKind == null || matchedTrainer == null)
-//                {
-//                    MessageBox.Show("קוד מאמן או קוד סוג אימון לא קיימים במסד הנתונים!");
-//                    return;
-//                }
-
-//                // 4. יצירת האובייקט החדש
-//                var newWorkout = new List_of_Exc_workouts
-//                {
-//                    Workout_date = fullDateTime,
-//                    Id_kindOf_workouts = matchedKind,
-//                    Id_trainer = matchedTrainer
-//                };
-
-//                // 5. שמירה לשרת דרך ה-API
-//                int newId = await _apiService.InsertAList_of_Exc_workouts(newWorkout);
-//                if (newId > 0)
-//                {
-//                    newWorkout.Id = newId;
-
-//                    // הוספה לרשימה המקומית כדי שלא נצטרך לטעון הכל מחדש מהמסד
-//                    _allExcWorkouts.Add(newWorkout);
-
-//                    MessageBox.Show("האימון נוסף בהצלחה!");
-//                    AddWorkoutPopup.IsOpen = false; // סגירת ה-Popup
-
-//                    // רענון אוטומטי של רשימת האימונים המוצגת למסך עבור היום הנוכחי
-//                    LoadWorkoutsForDate(baseDate.Date);
-//                }
-//                else
-//                {
-//                    MessageBox.Show("פעולת השמירה נכשלה בשרת.");
-//                }
-//            }
-//            catch (Exception ex)
-//            {
-//                MessageBox.Show($"שגיאה בשמירת האימון: {ex.Message}");
 //            }
 //        }
 //    }
 //}
 
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -534,7 +455,7 @@ namespace WpfTali.Pages
         private int currentTraineeId = -1;
         private int currentTrainerId = -1;
 
-        private DateTime _currentMonthDateTime = DateTime.Today;
+        private DateTime _currentMonthDateTime = new DateTime(2026, 6, 1);
 
         public WorkoutsPage(object loggedInUser)
         {
@@ -556,26 +477,27 @@ namespace WpfTali.Pages
                 _isTrainer = false;
                 currentTraineeId = trainee.Id;
             }
-            else
-            {
-                _isTrainer = false;
-            }
         }
 
         private async void WorkoutsPage_Loaded(object sender, RoutedEventArgs e)
         {
+            LoadingOverlay.Visibility = Visibility.Visible;
             try
             {
-                _allPeople = (await _apiService.GetAllPerson())?.Cast<Person>().ToList() ?? new List<Person>();
-                _allTrainees = (await _apiService.GetAllTrainee())?.Cast<Trainee>().ToList() ?? new List<Trainee>();
-                _allKinds = (await _apiService.GetAllKinds_of_workouts())?.Cast<Kinds_of_workouts>().ToList() ?? new List<Kinds_of_workouts>();
-                _allExcWorkouts = (await _apiService.GetAllList_of_Exc_workouts())?.Cast<List_of_Exc_workouts>().ToList() ?? new List<List_of_Exc_workouts>();
-                _allRegistrations = (await _apiService.GetAllTraining_registration())?.Cast<Training_registration>().ToList() ?? new List<Training_registration>();
-                _allSubscriptions = (await _apiService.GetAllSubscription())?.Cast<Subscription>().ToList() ?? new List<Subscription>();
+                await Task.Run(async () =>
+                {
+                    _allPeople = (await _apiService.GetAllPerson())?.Cast<Person>().ToList() ?? new List<Person>();
+                    _allTrainees = (await _apiService.GetAllTrainee())?.Cast<Trainee>().ToList() ?? new List<Trainee>();
+                    _allKinds = (await _apiService.GetAllKinds_of_workouts())?.Cast<Kinds_of_workouts>().ToList() ?? new List<Kinds_of_workouts>();
+                    _allExcWorkouts = (await _apiService.GetAllList_of_Exc_workouts())?.Cast<List_of_Exc_workouts>().ToList() ?? new List<List_of_Exc_workouts>();
+                    _allRegistrations = (await _apiService.GetAllTraining_registration())?.Cast<Training_registration>().ToList() ?? new List<Training_registration>();
+                    _allSubscriptions = (await _apiService.GetAllSubscription())?.Cast<Subscription>().ToList() ?? new List<Subscription>();
+                });
 
                 if (!_isTrainer && currentTraineeId == -1 && _allTrainees.Count > 0)
                 {
-                    currentTraineeId = _allTrainees.First().Id;
+                    var personUser = _currentUser as Trainee;
+                    if (personUser != null) currentTraineeId = personUser.Id;
                 }
 
                 ApplyRolePermissions();
@@ -583,7 +505,11 @@ namespace WpfTali.Pages
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"שגיאה בטעינת הנתונים מהשרת: {ex.Message}");
+                MessageBox.Show($"שגיאה בתקשורת: {ex.Message}");
+            }
+            finally
+            {
+                LoadingOverlay.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -602,38 +528,36 @@ namespace WpfTali.Pages
             }
         }
 
+        private void BtnBackToHome_Click(object sender, RoutedEventArgs e)
+        {
+            if (NavigationService != null)
+            {
+                if (_isTrainer)
+                {
+                    Trainer currentTrainer = _currentUser as Trainer;
+                    NavigationService.Navigate(new HomePageTr(currentTrainer));
+                }
+                else
+                {
+                    Trainee currentTrainee = _currentUser as Trainee;
+                    NavigationService.Navigate(new HomePageTe(currentTrainee));
+                }
+            }
+        }
+
         private void DisplayMonth(DateTime monthDate)
         {
             string hebrewMonth = monthDate.ToString("MMMM yyyy", new System.Globalization.CultureInfo("he-IL"));
             MonthYearTextBlock.Text = hebrewMonth;
 
             int daysInMonth = DateTime.DaysInMonth(monthDate.Year, monthDate.Month);
-
             var days = Enumerable.Range(1, daysInMonth).Select(day => {
                 var date = new DateTime(monthDate.Year, monthDate.Month, day);
-                return new
-                {
-                    Date = date,
-                    DayNumber = day.ToString(),
-                    DayOfWeekHebrew = date.ToString("ddd", new System.Globalization.CultureInfo("he-IL"))
-                };
+                return new { Date = date, DayNumber = day.ToString(), DayOfWeekHebrew = date.ToString("ddd", new System.Globalization.CultureInfo("he-IL")) };
             }).ToList();
 
             DaysListBox.ItemsSource = days;
-
-            if (monthDate.Year == DateTime.Today.Year && monthDate.Month == DateTime.Today.Month)
-            {
-                DaysListBox.SelectedIndex = DateTime.Today.Day - 1;
-            }
-            else
-            {
-                DaysListBox.SelectedIndex = 0;
-            }
-
-            if (DaysListBox.SelectedItem != null)
-            {
-                DaysListBox.ScrollIntoView(DaysListBox.SelectedItem);
-            }
+            DaysListBox.SelectedIndex = (monthDate.Year == DateTime.Today.Year && monthDate.Month == DateTime.Today.Month) ? DateTime.Today.Day - 1 : 0;
         }
 
         private void NextMonthButton_Click(object sender, RoutedEventArgs e)
@@ -653,11 +577,8 @@ namespace WpfTali.Pages
         private void DaysListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (DaysListBox.SelectedItem == null) return;
-
             dynamic selectedDay = DaysListBox.SelectedItem;
-            DateTime targetDate = selectedDay.Date;
-
-            LoadWorkoutsForDate(targetDate);
+            LoadWorkoutsForDate(selectedDay.Date);
             DetailsPanel.Visibility = Visibility.Collapsed;
         }
 
@@ -666,11 +587,11 @@ namespace WpfTali.Pages
             var dailyWorkouts = _allExcWorkouts
                 .Where(w => w.Workout_date.Date == date.Date)
                 .Select(w => {
-                    var kind = _allKinds.FirstOrDefault(k => k.Id == w.Id_kindOf_workouts.Id);
-                    var trainerData = _allPeople.FirstOrDefault(p => p.Id == w.Id_trainer.Id);
-
+                    var kind = _allKinds.FirstOrDefault(k => k.Id == w.Id_kindOf_workouts?.Id);
+                    var trainerData = _allPeople.FirstOrDefault(p => p.Id == w.Id_trainer?.Id);
                     int bookedCount = _allRegistrations.Count(r => r.Id_excWorkouts != null && r.Id_excWorkouts.Id == w.Id);
                     bool isRegistered = _allRegistrations.Any(r => r.Id_excWorkouts != null && r.Id_trainee != null && r.Id_excWorkouts.Id == w.Id && r.Id_trainee.Id == currentTraineeId);
+
                     return new WorkoutDisplayItem
                     {
                         RawWorkout = w,
@@ -688,7 +609,6 @@ namespace WpfTali.Pages
         {
             var selectedItem = WorkoutsListView.SelectedItem as WorkoutDisplayItem;
             if (selectedItem == null) return;
-
             RefreshDetailsPanel(selectedItem);
             DetailsPanel.Visibility = Visibility.Visible;
         }
@@ -706,7 +626,8 @@ namespace WpfTali.Pages
             UpdateRegisteredTraineesList(item.RawWorkout.Id);
             UpdateActionButtonState(item);
 
-            if (_isTrainer && item.RawWorkout.Id_trainer != null && item.RawWorkout.Id_trainer.Id == currentTrainerId)
+            bool isOwnWorkout = item.RawWorkout.Id_trainer?.Id == currentTrainerId;
+            if (_isTrainer && isOwnWorkout)
             {
                 DeleteWorkoutButton.Visibility = Visibility.Visible;
             }
@@ -716,27 +637,14 @@ namespace WpfTali.Pages
             }
         }
 
-        /// <summary>
-        /// פונקציית טעינת המתאמנים המתוקנת - מונעת איבוד כפילויות ומציגה את כולם במדויק
-        /// </summary>
         private void UpdateRegisteredTraineesList(int workoutId)
         {
-            // שליפת כל הרישומים המשויכים לקוד האימון הנוכחי
-            var activeRegistrations = _allRegistrations
+            var activeRegs = _allRegistrations
                 .Where(r => r.Id_excWorkouts != null && r.Id_excWorkouts.Id == workoutId && r.Id_trainee != null)
+                .Select(r => r.Id_trainee.Id)
                 .ToList();
 
-            List<Person> registeredPeople = new List<Person>();
-
-            foreach (var reg in activeRegistrations)
-            {
-                // חיפוש ה-Person המתאים לכל רישום ספציפי
-                var person = _allPeople.FirstOrDefault(p => p.Id == reg.Id_trainee.Id);
-                if (person != null)
-                {
-                    registeredPeople.Add(person);
-                }
-            }
+            var registeredPeople = _allPeople.Where(p => activeRegs.Contains(p.Id)).ToList();
 
             RegisteredTraineesListView.ItemsSource = null;
             RegisteredTraineesListView.ItemsSource = registeredPeople;
@@ -744,14 +652,15 @@ namespace WpfTali.Pages
 
         private void UpdateActionButtonState(WorkoutDisplayItem item)
         {
+            if (_isTrainer) return;
+
             if (item.RawWorkout.Workout_date < DateTime.Now)
             {
-                ActionButton.Content = "אימון זה כבר עבר";
+                ActionButton.Content = "אימון זה עבר";
                 ActionButton.Background = Brushes.DarkGray;
                 ActionButton.IsEnabled = false;
                 return;
             }
-
             ActionButton.IsEnabled = true;
 
             if (item.IsUserRegistered)
@@ -759,14 +668,9 @@ namespace WpfTali.Pages
                 ActionButton.Content = "ביטול רישום";
                 ActionButton.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#333333"));
             }
-            else if (item.IsFull)
-            {
-                ActionButton.Content = "כניסה לרשימת המתנה";
-                ActionButton.Background = Brushes.Orange;
-            }
             else
             {
-                ActionButton.Content = "הרשמה לאימון";
+                ActionButton.Content = item.IsFull ? "כניסה להמתנה" : "הרשמה לאימון";
                 ActionButton.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF1493"));
             }
         }
@@ -776,142 +680,57 @@ namespace WpfTali.Pages
             var itemToUpdate = WorkoutsListView.SelectedItem as WorkoutDisplayItem;
             if (itemToUpdate == null) return;
 
-            if (itemToUpdate.RawWorkout.Workout_date < DateTime.Now)
+            LoadingOverlay.Visibility = Visibility.Visible;
+            try
             {
-                MessageBox.Show("לא ניתן לבצע פעולות ברישום עבור אימון שכבר עבר.", "האירוע עבר", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            var workoutId = itemToUpdate.RawWorkout.Id;
-
-            if (itemToUpdate.IsUserRegistered)
-            {
-                var registration = _allRegistrations.FirstOrDefault(r => r.Id_excWorkouts != null && r.Id_trainee != null && r.Id_excWorkouts.Id == workoutId && r.Id_trainee.Id == currentTraineeId);
-                if (registration != null)
+                if (itemToUpdate.IsUserRegistered)
                 {
-                    int res = await _apiService.DeleteATraining_registration(registration.Id);
+                    var registration = _allRegistrations.FirstOrDefault(r => r.Id_excWorkouts != null && r.Id_trainee != null && r.Id_excWorkouts.Id == itemToUpdate.RawWorkout.Id && r.Id_trainee.Id == currentTraineeId);
+                    if (registration != null)
+                    {
+                        int res = await _apiService.DeleteATraining_registration(registration.Id);
+                        if (res > 0)
+                        {
+                            _allRegistrations.Remove(registration);
+                            itemToUpdate.CurrentBooked--;
+                            itemToUpdate.IsUserRegistered = false;
+                            MessageBox.Show("הרישום בוטל בהצלחה.");
+                        }
+                    }
+                }
+                else
+                {
+                    var currentTraineeObj = _allTrainees.FirstOrDefault(t => t.Id == currentTraineeId) ?? new Trainee { Id = currentTraineeId };
+                    var currentWorkoutObj = _allExcWorkouts.FirstOrDefault(w => w.Id == itemToUpdate.RawWorkout.Id);
+
+                    var newReg = new Training_registration { Id_trainee = currentTraineeObj, Id_excWorkouts = currentWorkoutObj };
+                    int res = await _apiService.InsertATraining_registration(newReg);
                     if (res > 0)
                     {
-                        _allRegistrations.Remove(registration);
-                        itemToUpdate.CurrentBooked--;
-                        itemToUpdate.IsUserRegistered = false;
-
-                        MessageBox.Show("ההרשמה בוטלה בהצלחה.");
-                    }
-                    else
-                    {
-                        MessageBox.Show("פעולת הביטול נכשלה בשרת.");
+                        newReg.Id = res;
+                        _allRegistrations.Add(newReg);
+                        itemToUpdate.CurrentBooked++;
+                        itemToUpdate.IsUserRegistered = true;
+                        MessageBox.Show("נרשמת בהצלחה!");
                     }
                 }
+                RefreshDetailsPanel(itemToUpdate);
             }
-            else
-            {
-                if (!CheckSubscriptionLimit())
-                {
-                    MessageBox.Show("אזהרה: עברת את מגבלת האימונים השבועית!", "מגבלת מנוי", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                var currentTraineeObj = _allTrainees.FirstOrDefault(t => t.Id == currentTraineeId);
-                var currentWorkoutObj = _allExcWorkouts.FirstOrDefault(w => w.Id == workoutId);
-                var newReg = new Training_registration
-                {
-                    Id_trainee = currentTraineeObj,
-                    Id_excWorkouts = currentWorkoutObj
-                };
-
-                int res = await _apiService.InsertATraining_registration(newReg);
-                if (res > 0)
-                {
-                    newReg.Id = res;
-                    _allRegistrations.Add(newReg);
-                    itemToUpdate.CurrentBooked++;
-                    itemToUpdate.IsUserRegistered = true;
-
-                    MessageBox.Show(itemToUpdate.IsFull ? "נכנסת לרשימת ההמתנה בהצלחה!" : "נרשמת לאימון בהצלחה!");
-                }
-                else
-                {
-                    MessageBox.Show("פעולת ההרשמה נכשלה בשרת.");
-                }
-            }
-
-            RefreshDetailsPanel(itemToUpdate);
+            catch (Exception ex) { MessageBox.Show($"שגיאה בביצוע הפעולה: {ex.Message}"); }
+            finally { LoadingOverlay.Visibility = Visibility.Collapsed; }
         }
 
-        private void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (NavigationService.CanGoBack)
-            {
-                NavigationService.GoBack();
-            }
-        }
-
-        private async void DeleteWorkoutButton_Click(object sender, RoutedEventArgs e)
-        {
-            var itemToDelete = WorkoutsListView.SelectedItem as WorkoutDisplayItem;
-            if (itemToDelete == null) return;
-
-            var result = MessageBox.Show($"האם אתה בטוח שברצונך לבטל ולמחוק את אימון ה-{itemToDelete.WorkoutName} לחלוטין?", "אישור מחיקה", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
-            {
-                int res = await _apiService.DeleteAList_of_Exc_workouts(itemToDelete.RawWorkout.Id);
-                if (res > 0)
-                {
-                    MessageBox.Show("האימון נמחק בהצלחה.");
-                    _allExcWorkouts.Remove(itemToDelete.RawWorkout);
-
-                    dynamic selectedDay = DaysListBox.SelectedItem;
-                    if (selectedDay != null) LoadWorkoutsForDate(selectedDay.Date);
-                    DetailsPanel.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    MessageBox.Show("מחיקת האימון נכשלה בשרת.");
-                }
-            }
-        }
-
-        private bool CheckSubscriptionLimit()
-        {
-            var trainee = _allTrainees.FirstOrDefault(t => t.Id == currentTraineeId);
-            if (trainee == null || trainee.Id_Sub == null) return true;
-
-            var sub = _allSubscriptions.FirstOrDefault(s => s.Id == trainee.Id_Sub.Id);
-            if (sub == null) return true;
-
-            int maxAllowedPerWeek = 3;
-            if (sub.Name_of_sub.Contains("חופשי חודשי") || sub.Name_of_sub.Contains("ללא הגבלה")) maxAllowedPerWeek = int.MaxValue;
-            else if (sub.Name_of_sub.Contains("דו שבועי")) maxAllowedPerWeek = 2;
-            else if (sub.Name_of_sub.Contains("חד שבועי")) maxAllowedPerWeek = 1;
-
-            DateTime startOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
-            DateTime endOfWeek = startOfWeek.AddDays(7);
-
-            var bookedThisWeekCount = _allRegistrations.Count(r =>
-                r.Id_trainee != null && r.Id_trainee.Id == currentTraineeId &&
-                _allExcWorkouts.Any(w => r.Id_excWorkouts != null && w.Id == r.Id_excWorkouts.Id && w.Workout_date >= startOfWeek && w.Workout_date < endOfWeek)
-            );
-
-            return bookedThisWeekCount < maxAllowedPerWeek;
-        }
-
+        // עודכן: מאכלס את הקומבו-בוקס החדש בסוגי האימונים שהגיעו מהשרת
         private void AddWorkoutButton_Click(object sender, RoutedEventArgs e)
         {
             AddWorkoutPopup.IsOpen = true;
 
-            if (DaysListBox.SelectedItem != null)
-            {
-                dynamic selectedDay = DaysListBox.SelectedItem;
-                DpDate.SelectedDate = selectedDay.Date;
-            }
-            else
-            {
-                DpDate.SelectedDate = DateTime.Today;
-            }
+            CmbWorkoutKind.ItemsSource = _allKinds;
+            CmbWorkoutKind.SelectedIndex = -1;
 
-            TxtTime.Text = DateTime.Now.ToString("HH:mm");
-            TxtKindId.Clear();
+            if (DaysListBox.SelectedItem != null) { dynamic selectedDay = DaysListBox.SelectedItem; DpDate.SelectedDate = selectedDay.Date; }
+            else { DpDate.SelectedDate = DateTime.Today; }
+            TxtTime.Text = "18:00";
             TxtTrainerId.Text = currentTrainerId.ToString();
         }
 
@@ -920,9 +739,111 @@ namespace WpfTali.Pages
             AddWorkoutPopup.IsOpen = false;
         }
 
+        // עודכן: שואב את האובייקט וה-ID שלו ישירות מהקומבו בוקס במקום מטקסטבוקס
         private async void BtnSaveWorkout_Click(object sender, RoutedEventArgs e)
         {
-            // פונקציית שמירה הקיימת שלך...
+            if (DpDate.SelectedDate == null || string.IsNullOrWhiteSpace(TxtTime.Text) || CmbWorkoutKind.SelectedItem == null)
+            {
+                MessageBox.Show("נא למלא את כל השדות ולבחור סוג אימון!");
+                return;
+            }
+
+            var selectedKind = CmbWorkoutKind.SelectedItem as Kinds_of_workouts;
+            if (selectedKind == null)
+            {
+                MessageBox.Show("שגיאה בבחירת סוג האימון.");
+                return;
+            }
+
+            AddWorkoutPopup.IsOpen = false;
+            LoadingOverlay.Visibility = Visibility.Visible;
+
+            try
+            {
+                DateTime selectedDate = DpDate.SelectedDate.Value;
+                string[] timeParts = TxtTime.Text.Split(':');
+                if (timeParts.Length == 2 && int.TryParse(timeParts[0], out int hour) && int.TryParse(timeParts[1], out int minute))
+                {
+                    selectedDate = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day, hour, minute, 0);
+                }
+
+                var currentTrainerObj = _currentUser as Trainer;
+
+                var newWorkout = new List_of_Exc_workouts
+                {
+                    Workout_date = selectedDate,
+                    Id_kindOf_workouts = selectedKind,
+                    Id_trainer = currentTrainerObj
+                };
+
+                int newId = await _apiService.InsertAList_of_Exc_workouts(newWorkout);
+                if (newId > 0)
+                {
+                    newWorkout.Id = newId;
+                    newWorkout.Id_kindOf_workouts = selectedKind;
+                    newWorkout.Id_trainer = currentTrainerObj;
+
+                    _allExcWorkouts.Add(newWorkout);
+                    MessageBox.Show("האימון התווסף בהצלחה למערכת של פיטלי (Fitali)!");
+
+                    dynamic selectedDay = DaysListBox.SelectedItem;
+                    if (selectedDay != null) LoadWorkoutsForDate(selectedDay.Date);
+                }
+                else
+                {
+                    MessageBox.Show("השרת סירב להוסיף את האימון. ודא שכל הנתונים תקינים.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"שגיאה בהוספת אימון: {ex.Message}");
+            }
+            finally
+            {
+                LoadingOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void DeleteWorkoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            var itemToDelete = WorkoutsListView.SelectedItem as WorkoutDisplayItem;
+            if (itemToDelete == null) return;
+
+            if (itemToDelete.RawWorkout.Id_trainer?.Id != currentTrainerId)
+            {
+                MessageBox.Show("אינך מורשה למחוק אימון זה כיוון שהוא משויך למאמן אחר.", "חסימת אבטחה", MessageBoxButton.OK, MessageBoxImage.Stop);
+                return;
+            }
+
+            var result = MessageBox.Show($"האם אתה בטוח שברצונך למחוק את אימון ה-{itemToDelete.WorkoutName}?", "אישור מחיקה", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
+            {
+                LoadingOverlay.Visibility = Visibility.Visible;
+                try
+                {
+                    if (await _apiService.DeleteAList_of_Exc_workouts(itemToDelete.RawWorkout.Id) > 0)
+                    {
+                        _allExcWorkouts.Remove(itemToDelete.RawWorkout);
+                        MessageBox.Show("האימון נמחק בהצלחה.");
+
+                        dynamic selectedDay = DaysListBox.SelectedItem;
+                        if (selectedDay != null) LoadWorkoutsForDate(selectedDay.Date);
+                        DetailsPanel.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        MessageBox.Show("מחיקת האימון נכשלה בשרת.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"שגיאה במחיקה: {ex.Message}");
+                }
+                using (var task = Task.Delay(1)) // fallback matching finally context logic 
+                {
+                    LoadingOverlay.Visibility = Visibility.Collapsed;
+                }
+            }
         }
     }
 }

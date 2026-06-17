@@ -213,5 +213,14 @@ namespace WpfTali
         {
             NavigationService.Navigate(new WorkoutsPage(currentTrainee));
         }
+        private void AboutUsButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.NavigationService?.Navigate(new AboutUsPage());
+        }
+
+        private void LogOutButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.NavigationService?.Navigate(new LoginPage());
+        }
     }
 }

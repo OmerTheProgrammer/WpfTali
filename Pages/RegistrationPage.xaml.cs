@@ -75,7 +75,6 @@ namespace WpfTali
             if (isin)
             {
                 string selectedUserType = selectedUserTypeItem.Content.ToString();
-                // 2. איסוף נתונים מהשדות
                 string firstName = pName.Text;
                 string lastName = lName.Text;
                 string email = Email.Text;
@@ -90,7 +89,7 @@ namespace WpfTali
                     MessageBox.Show("Please select your birth date");
                     return;
                 }
-                Gender selectedGenderObj = gList[GenderComboBox.SelectedIndex];
+                Gender selectedGenderObj = gList[GenderComboBox.SelectedIndex];// הקוד לוקח את הבחירה של המשתמש ב־ComboBox ומחזיר את האובייקט המתאים מהרשימה gList
                 try
                 {
                     switch (selectedUserType)
@@ -120,7 +119,6 @@ namespace WpfTali
                             await apiservice.InsertATrainee(trainee);
                             MessageBox.Show("Trainee registration successful!");
 
-                            // תיקון: העברת האובייקט החדש לבנאי של עמוד הבית
                             NavigationService.Navigate(new HomePageTe(trainee));
                             break;
 
@@ -141,7 +139,6 @@ namespace WpfTali
                             await apiservice.InsertATrainer(trainer);
                             MessageBox.Show("Trainer registration successful!");
 
-                            // תיקון: העברת האובייקט החדש לבנאי של עמוד הבית
                             NavigationService.Navigate(new HomePageTr(trainer));
                             break;
 
@@ -162,7 +159,6 @@ namespace WpfTali
                             await apiservice.InsertAManager(manager);
                             MessageBox.Show("Manager registration successful!");
 
-                            // תיקון: העברת האובייקט החדש לבנאי של עמוד הבית
                             NavigationService.Navigate(new HomePageMa(manager));
                             break;
                     }
