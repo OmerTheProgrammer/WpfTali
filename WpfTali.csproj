@@ -34,13 +34,13 @@
 
   <ItemGroup>
     <Reference Include="Model">
-      <HintPath>..\TaliFitMe\Fitaliproject\bin\Debug\net8.0\Model.dll</HintPath>
+      <HintPath>..\TaliFitMe\Model\bin\Debug\net8.0\Model.dll</HintPath>
     </Reference>
     <Reference Include="Service">
       <HintPath>..\TaliFitMe\Fitaliproject\bin\Debug\net8.0\Service.dll</HintPath>
     </Reference>
     <Reference Include="ViewModel">
-      <HintPath>..\TaliFitMe\Fitaliproject\bin\Debug\net8.0\ViewModel.dll</HintPath>
+      <HintPath>..\TaliFitMe\ViewModel\bin\Debug\net8.0\ViewModel.dll</HintPath>
     </Reference>
   </ItemGroup>
 
